@@ -1,0 +1,75 @@
+.navbar-custom {
+    background-color: #00b140;
+    padding: 10px 0;
+}
+
+.navbar-custom .navbar-brand {
+    font-size: 24px;
+    color: #fff;
+}
+
+.navbar-custom .navbar-nav .nav-link {
+    font-size: 18px;
+    color: #fff;
+}
+
+.card {
+    border: none;
+}
+
+.card-header {
+    text-align: center;
+}
+
+.form-control {
+    width: 100%;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    border-color: #ced4da;
+}
+
+.form-control:focus {
+    border-color: #00b140;
+    box-shadow: 0 0 0 0.2rem rgba(0, 177, 64, 0.25);
+}
+
+.btn-primary {
+    width: 100%;
+    background-color: #00b140;
+    border: none;
+    transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: #009933;
+}
+
+.footer {
+    background-color: #00b140;
+    color: #fff;
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 200px;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.content {
+    flex: 1;
+}
+
+.additional-text {
+    text-align: center;
+    font-size: 16px;
+    background-color: #fff;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.green-text {
+    color: #00b140;
+    font-size: 24px;
+}
