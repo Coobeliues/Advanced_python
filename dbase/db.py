@@ -1,7 +1,8 @@
+import os
+
 from databases import Database
-import os  
+from dotenv import find_dotenv, load_dotenv
 from fastapi import FastAPI
-from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv())
 app = FastAPI()

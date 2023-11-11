@@ -1,27 +1,41 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
+import React from "react";
+import ReactDOM from "react-dom";
+import App from "./App";
 import { createBrowserRouter, Routes, Route, RouterProvider } from "react-router-dom";
-import Login from "./components/Login"
-import Profile from "./components/Profile"
+import { UserProvider } from "./context/UserContext";
+import Login from "./components/Login";
+import Register from "./components/Register";
 import Services from "./components/Services";
+import Profile from "./components/Profile";
 const root = ReactDOM.createRoot(document.getElementById('root'));
 const router = createBrowserRouter([
-      {
-        path: "/auth/login",
+    {
+        path: "/",
+        element: <App/>,
+        children: [
+        ]
+    },
+    {
+        path: "auth/login",
         element: <Login/>,
-      },
-      {
-        path: "/profile",
+    },
+    {
+        path: "auth/register",
+        element: <Register/>,
+    },
+    {
+        path: "profile",
         element: <Profile/>,
-      },
-      {
-        path: "/services",
+    },
+    {
+        path: "services",
         element: <Services/>,
-      },
-])
+    },
 
+])
 root.render(
-    <RouterProvider router = {router} />
+    <UserProvider>
+        <RouterProvider router = {router} />
+    </UserProvider>,
+
 );

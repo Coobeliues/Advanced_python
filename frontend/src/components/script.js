@@ -56,31 +56,4 @@ function changeLanguage(language) {
     }
 }
 
-function signIn() {
-    window.location.href = 'services.html';
-}
-
-document.getElementById('sign-in-button').addEventListener('click', signIn);
-
 changeLanguage("EN");
-
-
-document.getElementById("sign-in-button").addEventListener("click", async (event) => {
-    event.preventDefault();
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
-
-    const response = await fetch("/auth/login/", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-    });
-
-    if (response.ok) {
-        window.location.href = "/services.html"; 
-    } else {
-        console.error("Login failed");
-    }
-});
