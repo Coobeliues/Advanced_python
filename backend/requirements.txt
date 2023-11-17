@@ -8,3 +8,4 @@ SQLAlchemy==1.4.50
 uvicorn==0.15.0
 python-dotenv==0.19.1
 gunicorn
+asyncpg

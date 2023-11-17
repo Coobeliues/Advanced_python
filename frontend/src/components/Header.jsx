@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import './Header.css';
 import { UserContext } from "../context/UserContext";
-import Profile from "./Profile";
+
 import {Link, useNavigate} from "react-router-dom";
 
 const Header = ({ title }) => {

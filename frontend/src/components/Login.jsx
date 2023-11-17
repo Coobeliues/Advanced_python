@@ -1,7 +1,6 @@
 import React, {useContext, useState} from 'react';
 import {UserContext} from "../context/UserContext";
 import './Login.css';
-// import './script.js'
 import "https://code.jquery.com/jquery-3.5.1.slim.min.js"
 import "https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"
 import "https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"

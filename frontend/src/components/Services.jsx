@@ -1,5 +1,5 @@
 
-const Services = ({ title }) => {
+const Services = () => {
 
     return (
 

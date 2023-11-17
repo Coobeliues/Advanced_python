@@ -1,26 +1,31 @@
-version: '3.7'
+
+version: '3'
+
 services:
-
-  frontend:
-    image: frontend-image
-    ports:
-      - 8888:8000  
-
-  db:
-    image: postgres:15
+  postgres:
     container_name: db_app
+    build:
+      context: ./backend/dbase
     ports:
-      - 1221:5432  
-    env_file:
-      - .env
+      - "5433:5432"
+
 
   backend:
+    container_name: fastapi_app
     build:
-      context: .
+      context: ./backend
+    ports:
+      - "8000:8000"
     env_file:
       - .env
-    container_name: fastapi_app
-    ports:
-      - 9999:8000 
     depends_on:
-      - db
+      - postgres
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "80:3000"
+    depends_on:
+      - backend
+
