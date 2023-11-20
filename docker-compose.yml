@@ -1,14 +1,13 @@
 
 version: '3'
 
-services:
-  postgres:
-    container_name: db_app
-    build:
-      context: ./backend/dbase
-    ports:
-      - "5433:5432"
+x-env-variables: &env-variables
+  POSTGRES_USER: "postgres"
+  POSTGRES_PASSWORD: "601246"
+  POSTGRES_DB: "egov"
+  DATABASE_URL: "postgresql://postgres:601246@host.docker.internal:5432/egov"
 
+services:
 
   backend:
     container_name: fastapi_app
@@ -16,16 +15,31 @@ services:
       context: ./backend
     ports:
       - "8000:8000"
-    env_file:
-      - .env
     depends_on:
-      - postgres
+      - db
+    environment: 
+      <<: *env-variables
+    # networks:
+    #   - egov
+
+  db:
+    container_name: postgresql_db
+    image: postgres
+    ports:
+      - 5433:5432
+    environment: 
+      <<: *env-variables
 
   frontend:
     build:
       context: ./frontend
     ports:
-      - "80:3000"
+      - "3000:3000"
     depends_on:
       - backend
+    # networks:
+    #   - egov
 
+# networks:
+#   egov:
+#     driver: bridge

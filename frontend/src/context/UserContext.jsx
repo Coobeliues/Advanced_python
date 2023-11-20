@@ -15,7 +15,7 @@ export const UserProvider = (props) => {
         },
       };
 
-      const response = await fetch("/users/me/", requestOptions);
+      const response = await fetch("http://localhost:8000/users/me/", requestOptions);
 
       if (!response.ok) {
         setToken(null);

@@ -1,12 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
-
-import Register from "./components/Register";
-import Login from "./components/Login";
+import React, { useContext, useEffect, useState } from "react";;
 import Header from "./components/Header";
 import { UserContext } from "./context/UserContext";
-import Home from "./components/Home";
-import Profile from "./components/Profile";
-import {Link} from "react-router-dom";
+
 
 const App = () => {
   const [message, setMessage] = useState("");
@@ -18,7 +13,7 @@ const App = () => {
         "Content-Type": "application/json",
       },
     };
-    const response = await fetch("/", requestOptions);
+    const response = await fetch("http://localhost:8000/", requestOptions);
     const data = await response.json();
 
     if (!response.ok) {
