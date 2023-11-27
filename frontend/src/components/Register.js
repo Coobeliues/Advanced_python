@@ -7,7 +7,7 @@ const RegistrationForm = () => {
     password: '',
   });
   const [errorMessage, setErrorMessage] = useState('');
-
+  const [successMessage, setSuccessMessage] = useState('');
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -34,7 +34,8 @@ const RegistrationForm = () => {
       if (response.ok) {
         // Registration successful, you can redirect or show a success message
         console.log('Registration successful');
-        alert("Registration is successful, now sign in!")
+        // alert("Registration is successful, now sign in!")
+        setSuccessMessage('Registration is successful, now sign in!');
       } else {
         const data = await response.json();
         setErrorMessage(data.detail);
@@ -90,6 +91,7 @@ const RegistrationForm = () => {
                       </div>
                     </form>
                     {errorMessage && <p className="error-message">{errorMessage}</p>}
+                    {successMessage && <p className="error-message">{successMessage}</p>}
                   </div>
                 </div>
               </div>
@@ -97,7 +99,7 @@ const RegistrationForm = () => {
           </div>
         </div>
 
-        <div className="footer">© <span id="footer-text"></span></div>
+        <div className="footer">© <span id="footer-text">Electronic Government of the Republic of Kazakhstan</span></div>
       </>
   );
 };

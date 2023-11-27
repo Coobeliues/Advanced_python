@@ -1,7 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";;
+import React, { useContext, useEffect, useState } from "react";
 import Header from "./components/Header";
 import { UserContext } from "./context/UserContext";
-
 
 const App = () => {
   const [message, setMessage] = useState("");
@@ -28,23 +27,23 @@ const App = () => {
   }, []);
 
   return (
-      <>
-        <Header title={message} />
-        <div className="columns">
-          <div className="column"></div>
-          <div className="column m-5 is-two-thirds">
-            {!token ? (
-                <div className="columns">
-                  {/*<Register/>*/}
-                  {/*<Login/>*/}
-                </div>
-            ) : (
-                <></>
-            )}
-          </div>
-          <div className="column"></div>
+    <>
+      <Header title={message} />
+      <div className="columns">
+        <div className="column"></div>
+        <div className="column m-5 is-two-thirds">
+          {!token ? (
+            <div className="columns">
+              {/*<Register/>*/}
+              {/*<Login/>*/}
+            </div>
+          ) : (
+            <></>
+          )}
         </div>
-      </>
+        <div className="column"></div>
+      </div>
+    </>
   );
 };
 
