@@ -18,10 +18,7 @@ const RegistrationForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // You can perform form validation here if needed
-
-    // Send the registration data to your backend for processing
+    
     try {
       const response = await fetch('http://localhost:8000/auth/register', {
         method: 'POST',

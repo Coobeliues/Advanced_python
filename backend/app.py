@@ -35,6 +35,6 @@ async def shutdown_db_client():
 
 @app.get("/")
 async def root():
-    return {"message": "Awesome Leads Manager"}
+    return {"message": "Egov system"}
 app.include_router(auth.router, prefix="/auth", tags=["authentication"])
 app.include_router(users.router, prefix="/users", tags=["users"])

@@ -3,24 +3,11 @@ version: '3'
 
 x-env-variables: &env-variables
   POSTGRES_USER: "postgres"
-  POSTGRES_PASSWORD: "9792amina"
+  POSTGRES_PASSWORD: "601246"
   POSTGRES_DB: "egov"
-  DATABASE_URL: "postgresql://postgres:9792amina@host.docker.internal:5432/egov"
+  DATABASE_URL: "postgresql://postgres:601246@host.docker.internal:5432/egov"
 
 services:
-
-  backend:
-    container_name: fastapi_app
-    build:
-      context: ./backend
-    ports:
-      - "8000:8000"
-    depends_on:
-      - db
-    environment: 
-      <<: *env-variables
-    # networks:
-    #   - egov
 
   db:
     container_name: postgresql_db
@@ -29,6 +16,21 @@ services:
       - 5433:5432
     environment: 
       <<: *env-variables
+
+  backend:
+    container_name: fastapi_app
+    environment: 
+      <<: *env-variables
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000"
+    command: ["/app/docker/app.sh"]
+    depends_on:
+      - db
+  
+    # networks:
+    #   - egov
 
   frontend:
     build:

@@ -1,34 +1,38 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useContext} from "react";
+import {UserContext} from "../context/UserContext" 
 
 
 const Profile = () => {
-    const [token, setToken] = useState(localStorage.getItem("awesomeLeadsToken"));
-    var name;
+    const [user, setUser] = useState(null);
+    const [token] = useContext(UserContext);
     useEffect(() => {
         const fetchUser = async () => {
-            const requestOptions = {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                },
-            };
-
-            const response = await fetch("/users/me/", requestOptions);
-
-            if (!response.ok) {
-                setToken(null);
-            }
-            localStorage.setItem("awesomeLeadsToken", token);
-            console.log(response.json())
-            // name = await response.json()["username"];
-            // console.log(name)
+        const requestOptions = {
+            method: "GET",
+            headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+            },
         };
-        // fetchUser();
+
+        const response = await fetch("http://localhost:8000/users/profile/", requestOptions);
+
+    
+        const userData = await response.json(); // Parse the JSON response
+
+        setUser(userData);
+        };
+        fetchUser();
     }, [token]);
     return(
         <>
             <h2>Profile</h2>
+            {user && (
+                <div>
+                    <h3>Name: {user.username}</h3>
+                    {/* Display other user information here */}
+                </div>
+            )}
         </>
     )
 }
