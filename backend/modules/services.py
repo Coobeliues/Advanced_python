@@ -40,7 +40,6 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
 
 async def get_user_information(tokendata: _model.TokenData = Depends(get_current_user)):
     username = tokendata.username
-    query = _model.users.select().where(_model.users.c.username == username)
+    query = _model.users_info.select().where(_model.users.c.username == username)
     user = await DB.fetch_one(query)
-
     return user

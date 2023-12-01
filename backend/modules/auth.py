@@ -1,5 +1,6 @@
 
 # import jwt
+from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status
 from passlib.context import CryptContext
 
@@ -18,22 +19,22 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # Create a user
 @router.post("/register/", response_model=_model.Token)
 async def register(user: _model.UserCreate):
-    # Check if the username is already taken
     query = _model.users.select().where(_model.users.c.username == user.username)
     existing_user = await DB.fetch_one(query)
 
     if existing_user:
         raise HTTPException(status_code=400, detail="Username already registered")
-
-    # Hash the password
+    
     hashed_password = pwd_context.hash(user.password)
 
-    # Insert the user into the database
     role_id = 1
-    query = _model.users.insert().values(username=user.username, password=hashed_password, role_id = role_id)
-    user_id = await DB.execute(query)
+    registered_at = datetime.now()
 
-    # Generate and return an access token after successful registration
+    query = _model.users.insert().values(username=user.username, password=hashed_password,registered_at = registered_at, role_id = role_id).returning(_model.users.c.id)
+    user_id = await DB.execute(query)
+    query1 = _model.users_info.insert().values(user_id=user_id,username=user.username,role_id = role_id)
+    result1 = await DB.execute(query1)
+   
     access_token = create_access_token(data={"sub": user.username})
     return {"access_token": access_token, "token_type": "bearer", "greeting": user.username}
 
