@@ -32,7 +32,14 @@ async def register(user: _model.UserCreate):
 
     query = _model.users.insert().values(username=user.username, password=hashed_password,registered_at = registered_at, role_id = role_id).returning(_model.users.c.id)
     user_id = await DB.execute(query)
-    query1 = _model.users_info.insert().values(user_id=user_id,username=user.username,role_id = role_id)
+    query1 = _model.users_info.insert().values(
+        user_id=user_id,
+        username=user.username,
+        role_id = role_id,
+        nationality="Kazakh",
+        country= "Kazakhstan",
+        city= "Almaty",
+        education = "No education")
     result1 = await DB.execute(query1)
    
     access_token = create_access_token(data={"sub": user.username})

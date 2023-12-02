@@ -1,1 +1,1 @@
-from . import auth, services, users, model
+from . import auth, services, users, model, userServices, managerServices

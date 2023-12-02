@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from dbase import DB
-from modules import auth, users
+from modules import auth, users, userServices, managerServices
 
 app = FastAPI()
 # origins = [
@@ -38,3 +38,5 @@ async def root():
     return {"message": "Egov system"}
 app.include_router(auth.router, prefix="/auth", tags=["authentication"])
 app.include_router(users.router, prefix="/users", tags=["users"])
+app.include_router(userServices.router, prefix="/services", tags=["services"])
+app.include_router(managerServices.router, prefix="/manager", tags=["manager"])

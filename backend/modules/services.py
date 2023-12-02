@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
-
+from functools import wraps
+from sqlalchemy import select
 import jwt
 from fastapi import Depends, HTTPException, status
-# from databases import Database
 from fastapi.security import OAuth2PasswordBearer
 from dbase import DB
 import modules.model as _model
@@ -35,7 +35,6 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         token_data = _model.TokenData(username=username)
     except:
         raise credentials_exception
-
     return token_data
 
 async def get_user_information(tokendata: _model.TokenData = Depends(get_current_user)):
@@ -43,3 +42,21 @@ async def get_user_information(tokendata: _model.TokenData = Depends(get_current
     query = _model.users_info.select().where(_model.users.c.username == username)
     user = await DB.fetch_one(query)
     return user
+
+
+
+def check_is_done():
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(user: _model.UserRead, user1: _model.UserRead = Depends(get_user_information)):
+            query = select([_model.requests.c.is_done]).where(_model.requests.c.user_id == user1.user_id)
+            is_done = await DB.fetch_val(query)
+
+            if is_done:
+                return await func(user, user1)
+            else:
+                return {"detail": "Access denied"}
+
+        return wrapper
+
+    return decorator

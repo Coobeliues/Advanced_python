@@ -47,7 +47,7 @@ requests = Table(
     "requests",
     metadata,
     Column("id", Integer, primary_key=True),
-    Column("user_id", String, nullable=False),
+    Column("user_id", Integer, nullable=False),
     Column("datas_from_users", JSON, nullable=False),
     Column("is_done", Boolean,default= False),
     UniqueConstraint('user_id', name='unique_user_id') 
@@ -75,6 +75,11 @@ class UserRead(BaseModel):
     email: str
     role_id: int
 
+class RequestRead(BaseModel):
+    id: int
+    user_id: int
+    datas_from_users: dict
+    is_done: bool
 
 class User(BaseModel):
     username: str

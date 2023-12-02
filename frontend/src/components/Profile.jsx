@@ -1,40 +1,104 @@
-import React, {useEffect, useState, useContext} from "react";
-import {UserContext} from "../context/UserContext" 
+import React, { useEffect, useState, useContext } from "react";
+import { UserContext } from "../context/UserContext";
+import "./Profile.css";  
 
+// const extractDateComponents = (birthdate) => {
+//   const dateObj = new Date(birthdate);
+
+//   if (isNaN(dateObj.getTime())) {
+//     // Handle invalid date string
+//     return null;
+//   }
+
+//   const day = dateObj.getDate();
+//   const month = dateObj.toLocaleString('default', { month: 'long' });
+//   const year = dateObj.getFullYear();
+
+//   return { day, month, year };
+// };
 
 const Profile = () => {
-    const [user, setUser] = useState(null);
-    const [token] = useContext(UserContext);
-    useEffect(() => {
-        const fetchUser = async () => {
-        const requestOptions = {
-            method: "GET",
-            headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + token,
-            },
-        };
+  const [user, setUser] = useState(null);
+  const [token] = useContext(UserContext);
 
-        const response = await fetch("http://localhost:8000/users/profile/", requestOptions);
+  useEffect(() => {
+    const fetchUser = async () => {
+      const requestOptions = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+      };
 
-    
-        const userData = await response.json(); // Parse the JSON response
+      const response = await fetch("http://localhost:8000/users/profile/", requestOptions);
 
-        setUser(userData);
-        };
-        fetchUser();
-    }, [token]);
-    return(
-        <>
-            <h2>Profile</h2>
-            {user && (
-                <div>
-                    <h3>Name: {user.username}</h3>
-                    {/* Display other user information here */}
-                </div>
-            )}
-        </>
-    )
-}
+      const userData = await response.json();
+
+      setUser(userData);
+    };
+    fetchUser();
+  }, [token]);
+
+//   const birthdateComponents = user ? extractDateComponents(user.birthdate) : null;
+
+  return (
+    <>
+      <h2 className="profile-header">Profile</h2>
+      {user && (
+        <div className="profile-container">
+          <h3 className="username">Name: {user.username}</h3>
+          {/* {birthdateComponents && (
+            <div className="birthdate-info">
+              <strong>Birthdate:</strong> {user.birthdate}
+              <div>
+                <strong>Day:</strong> {birthdateComponents.day}
+              </div>
+              <div>
+                <strong>Month:</strong> {birthdateComponents.month}
+              </div>
+              <div>
+                <strong>Year:</strong> {birthdateComponents.year}
+              </div>
+            </div>
+          )} */}
+          <div>
+            <strong>First Name:</strong> {user.firstname || "No info"}
+          </div>
+          <div>
+            <strong>Last Name:</strong> {user.lastname || "No info"}
+          </div>
+          <div>
+            <strong>Id:</strong> {user.user_id !== null && user.user_id !== undefined ? user.user_id : "No info"}
+          </div>
+          <div>
+            <strong>Gender:</strong> {user.gender || "No info"}
+          </div>
+          <div>
+            <strong>Nationality:</strong> {user.nationality || "No info"}
+          </div>
+          <div>
+            <strong>Country:</strong> {user.country || "No info"}
+          </div>
+          <div>
+            <strong>City:</strong> {user.city || "No info"}
+          </div>
+          <div>
+            <strong>Education:</strong> {user.education || "No info"}
+          </div>
+          <div>
+            <strong>Phone Number:</strong> {user.phone_number || "No info"}
+          </div>
+          <div>
+            <strong>Email:</strong> {user.email || "No info"}
+          </div>
+          <div>
+            <strong>Telegram Account:</strong> {user.telegram_account || "No info"}
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
 
 export default Profile;
