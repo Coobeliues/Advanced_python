@@ -44,32 +44,29 @@ const Profile = () => {
 
   return (
     <>
-      <h2 className="profile-header">Profile</h2>
-      {user && (
-        <div className="profile-container">
-          <h3 className="username">Name: {user.username}</h3>
+      {user && token && (
+        <><h2 className="profile-header">Profile</h2>
+          <div className="profile-container">
+          <h3 className="username">Username: {user.username}</h3>
           {/* {birthdateComponents && (
-            <div className="birthdate-info">
-              <strong>Birthdate:</strong> {user.birthdate}
-              <div>
-                <strong>Day:</strong> {birthdateComponents.day}
-              </div>
-              <div>
-                <strong>Month:</strong> {birthdateComponents.month}
-              </div>
-              <div>
-                <strong>Year:</strong> {birthdateComponents.year}
-              </div>
-            </div>
-          )} */}
+      <div className="birthdate-info">
+        <strong>Birthdate:</strong> {user.birthdate}
+        <div>
+          <strong>Day:</strong> {birthdateComponents.day}
+        </div>
+        <div>
+          <strong>Month:</strong> {birthdateComponents.month}
+        </div>
+        <div>
+          <strong>Year:</strong> {birthdateComponents.year}
+        </div>
+      </div>
+    )} */}
           <div>
             <strong>First Name:</strong> {user.firstname || "No info"}
           </div>
           <div>
             <strong>Last Name:</strong> {user.lastname || "No info"}
-          </div>
-          <div>
-            <strong>Id:</strong> {user.user_id !== null && user.user_id !== undefined ? user.user_id : "No info"}
           </div>
           <div>
             <strong>Gender:</strong> {user.gender || "No info"}
@@ -95,7 +92,7 @@ const Profile = () => {
           <div>
             <strong>Telegram Account:</strong> {user.telegram_account || "No info"}
           </div>
-        </div>
+        </div></>
       )}
     </>
   );

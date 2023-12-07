@@ -6,10 +6,12 @@ import "https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js
 import "https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
 
 import {Link, useNavigate} from "react-router-dom";
+import { UserContext1 } from '../context/UserContext1';
 
 const Login = () => {
     const navigate = useNavigate();
     const [, setToken] = useContext(UserContext);
+    const [, setUser] = useContext(UserContext1);
 
     const [formData, setFormData] = useState({
         username: '',
@@ -41,6 +43,7 @@ const Login = () => {
             if (response.ok) {
                 console.log('Login successful');
                 setToken(data.access_token);
+                setUser();
                 navigate("/");
             } else {
                 setErrorMessage(data.detail);

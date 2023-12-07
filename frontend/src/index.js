@@ -3,10 +3,15 @@ import ReactDOM from "react-dom";
 import App from "./App";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { UserProvider } from "./context/UserContext";
+import { UserProvider1 } from "./context/UserContext1";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Services from "./components/Services";
+import Service1 from "./components/Service1";
 import Profile from "./components/Profile";
+import Requests from "./components/Requests";
+import RequestDetail from "./components/RequestDetail.jsx";
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 const router = createBrowserRouter([
     {
@@ -31,11 +36,24 @@ const router = createBrowserRouter([
         path: "services",
         element: <Services/>,
     },
-
+    {
+        path: "services/editInfo",
+        element: <Service1/>,
+    },
+    {
+        path: "requests",
+        element: <Requests/>,
+    },
+    {
+        path: "requests/:id",
+        element: <RequestDetail/>,
+    }
 ])
 root.render(
     <UserProvider>
-        <RouterProvider router = {router} />
+        <UserProvider1>
+            <RouterProvider router = {router} />
+        </UserProvider1>
     </UserProvider>,
 
 );

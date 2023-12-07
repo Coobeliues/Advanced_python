@@ -50,7 +50,15 @@ requests = Table(
     Column("user_id", Integer, nullable=False),
     Column("datas_from_users", JSON, nullable=False),
     Column("is_done", Boolean,default= False),
-    UniqueConstraint('user_id', name='unique_user_id') 
+    Column("confirmed",Boolean,default= False),
+    Column("type",String,ForeignKey("types.name")),
+)
+
+types = Table(
+    "types",
+    metadata,
+    Column("id", Integer),
+    Column("name", String, primary_key=True),
 )
 
 class UserCreate(BaseModel):
@@ -58,7 +66,7 @@ class UserCreate(BaseModel):
     password: str
     
 class UserRead(BaseModel):
-    id: int
+    # id: int
     user_id: int
     username: str
     firstname: str
@@ -73,13 +81,14 @@ class UserRead(BaseModel):
     birthdate: str
     telegram_account: str
     email: str
-    role_id: int
+    # role_id: int
 
 class RequestRead(BaseModel):
-    id: int
+    # id: int
     user_id: int
     datas_from_users: dict
     is_done: bool
+    confirmed: bool
 
 class User(BaseModel):
     username: str

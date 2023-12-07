@@ -33,30 +33,43 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         if username is None:
             raise credentials_exception
         token_data = _model.TokenData(username=username)
-    except:
+    except jwt.ExpiredSignatureError:
+        raise credentials_exception
+    except jwt.JWTError:
         raise credentials_exception
     return token_data
 
 async def get_user_information(tokendata: _model.TokenData = Depends(get_current_user)):
     username = tokendata.username
-    query = _model.users_info.select().where(_model.users.c.username == username)
-    user = await DB.fetch_one(query)
-    return user
-
+    print(username)
+    query = _model.users_info.select().where(_model.users_info.c.username == username)  # Adjust this line
+    try:
+        user = await DB.fetch_one(query)
+        print(user)
+        return user
+    except Exception as e:
+        print(f"Error fetching user: {e}")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
 
 def check_is_done():
     def decorator(func):
         @wraps(func)
         async def wrapper(user: _model.UserRead, user1: _model.UserRead = Depends(get_user_information)):
-            query = select([_model.requests.c.is_done]).where(_model.requests.c.user_id == user1.user_id)
-            is_done = await DB.fetch_val(query)
-
-            if is_done:
+            req = _model.requests.select().where(_model.requests.c.user_id == user1.user_id)
+            exist = await DB.fetch_one(query=req)
+            
+            if exist is None:
                 return await func(user, user1)
             else:
-                return {"detail": "Access denied"}
+                query = select([_model.requests.c.is_done]).where(_model.requests.c.user_id == user1.user_id)
+                query1 = select([_model.requests.c.confirmed]).where(_model.requests.c.user_id == user1.user_id)
+                is_done = await DB.fetch_one(query)
+                confirm = await DB.fetch_one(query1)
+                if (is_done and confirm) or (not is_done and not confirm):
+                    raise HTTPException(status_code=400, detail="already exists")
+                else:
+                    return await func(user, user1)
 
         return wrapper
-
     return decorator

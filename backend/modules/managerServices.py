@@ -1,18 +1,27 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 import json
 import modules.model as _model
 from dbase import DB
 from modules.services import check_is_done, get_user_information
 import modules.model as _model
 from sqlalchemy import update
+from datetime import datetime
 
 router = APIRouter()
 
-@router.get("/allRequests")
+@router.get("/requests")
 async def get_all_requests():
     query = "SELECT * FROM requests"
     results = await DB.fetch_all(query=query)
     return results
+
+@router.get("/requests/{request_id}")
+async def get_request(request_id: int):
+    query = _model.requests.select().where(_model.requests.c.id == request_id)
+    result = await DB.fetch_one(query=query)
+    if result is None:
+        raise HTTPException(status_code=404, detail="Request not found")
+    return result
 
 
 @router.put("/confirm")
@@ -20,30 +29,38 @@ async def confirm_status(request: _model.RequestRead):
     update_query = (
         update(_model.requests)
         .where(_model.requests.c.user_id == request.user_id)  
-        .values(is_done=True)
+        .values(is_done=True,confirmed = True)
     )
+    print(request.datas_from_users)
     await DB.execute(update_query)
-
+    
     user_info_query = (
         update(_model.users_info)
         .where(_model.users_info.c.user_id == request.user_id) 
         .values(
-            firstname=request.data_from_users.firstname,
-            lastname=request.data_from_users.lastname,
-            age=request.data_from_users.age,
-            nationality=request.data_from_users.nationality,
-            country=request.data_from_users.country,
-            city=request.data_from_users.city,
-            education=request.data_from_users.education,
-            phone_number=request.data_from_users.phone_number,
-            gender=request.data_from_users.gender,
-            birthdate=request.data_from_users.birthdate,
-            telegram_account=request.data_from_users.telegram_account,
-            email=request.data_from_users.email
+            firstname=request.datas_from_users["firstname"],
+            lastname=request.datas_from_users["lastname"],
+            age=request.datas_from_users["age"],
+            nationality=request.datas_from_users["nationality"],
+            country=request.datas_from_users["country"],
+            city=request.datas_from_users["city"],
+            education=request.datas_from_users["education"],
+            phone_number=request.datas_from_users["phone_number"],
+            gender=request.datas_from_users["gender"],
+            birthdate=datetime.strptime(request.datas_from_users["birthdate"], "%Y-%m-%d"),
+            telegram_account=request.datas_from_users["telegram_account"],
+            email=request.datas_from_users["email"]
         )
     )
     await DB.execute(user_info_query)
-
     return {"message": "Status confirmed and user_info updated"}
 
-    
+@router.put("/reject")
+async def reject_status(request: _model.RequestRead):
+    update_query = (
+        update(_model.requests)
+        .where(_model.requests.c.user_id == request.user_id)  
+        .values(confirmed = False,is_done = True)
+    )
+    await DB.execute(update_query)
+    return {"message": "Request rejected"}
