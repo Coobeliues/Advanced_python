@@ -4,7 +4,7 @@ import requests
 import telebot
 from fpdf import FPDF
 import dbase as _dbase
-import modules.model as _model
+import model as _model
 from fastapi import HTTPException
 
 TELEGRAM_BOT_TOKEN = '6897226082:AAHIKd83Se06Bp-8dd0NKaM-Dw_qffjam2c'
@@ -38,7 +38,6 @@ def get_data(message):
         bot.send_message(message.chat.id, f'Thank you, {username}! Your username has been saved.')
         
     else:
-
         bin_iin = message.text
         lang = 'en' 
         data = get_datas(bin_iin, lang)
