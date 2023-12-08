@@ -4,7 +4,6 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status
 from passlib.context import CryptContext
 
-
 import modules.model as _model
 from dbase.db import DB
 from modules.services import create_access_token, get_current_user

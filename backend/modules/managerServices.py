@@ -1,8 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
-import json
+from fastapi import APIRouter,HTTPException
 import modules.model as _model
 from dbase import DB
-from modules.services import check_is_done, get_user_information
 import modules.model as _model
 from sqlalchemy import update
 from datetime import datetime

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { UserContext } from "../context/UserContext";
 import "./Profile.css";  
+import {Link} from "react-router-dom";
 
 // const extractDateComponents = (birthdate) => {
 //   const dateObj = new Date(birthdate);
@@ -44,6 +45,7 @@ const Profile = () => {
 
   return (
     <>
+      <Link to="/"/><button>Back</button>
       {user && token && (
         <><h2 className="profile-header">Profile</h2>
           <div className="profile-container">

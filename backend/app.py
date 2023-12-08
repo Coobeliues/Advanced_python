@@ -6,14 +6,6 @@ from dbase import DB
 from modules import auth, users, userServices, managerServices
 
 app = FastAPI()
-# origins = [
-#     "http://localhost:3000",
-#     "http://localhost.tiangolo.com",
-#     "https://localhost.tiangolo.com",
-#     "http://localhost",
-#     "http://localhost:8080",
-    
-# ]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -21,7 +13,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 @app.on_event("startup")
 async def startup_db_client():

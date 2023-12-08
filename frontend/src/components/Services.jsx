@@ -10,8 +10,8 @@ const Services = () => {
             {token && (
                 <><Link to="/"><button>Back</button>
                 </Link><h2>Services</h2>
-                <Link to="editInfo">Service1</Link>
-                <Link to="service2">Service2</Link></>
+                <Link to="editInfo">Editing personal info</Link>
+                <Link to="getInfo">Getting info by legal entity</Link></>
             )};
         </>
     )

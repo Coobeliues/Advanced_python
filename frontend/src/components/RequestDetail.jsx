@@ -59,6 +59,7 @@ const RequestDetail = () => {
 
   return (
     <div>
+        <Link to="/requests"/><button>Back</button>
       {token && user.role_id === 2 && (
         <div>
           <h1>Request Detail</h1>

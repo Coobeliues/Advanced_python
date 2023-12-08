@@ -10,3 +10,8 @@ python-dotenv==0.19.1
 alembic
 gunicorn
 asyncpg
+psycopg2-binary
+pyTelegramBotAPI
+requests
+telebot
+fpdf

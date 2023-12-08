@@ -11,6 +11,7 @@ import Service1 from "./components/Service1";
 import Profile from "./components/Profile";
 import Requests from "./components/Requests";
 import RequestDetail from "./components/RequestDetail.jsx";
+import Service2 from "./components/Service2";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 const router = createBrowserRouter([
@@ -39,6 +40,10 @@ const router = createBrowserRouter([
     {
         path: "services/editInfo",
         element: <Service1/>,
+    },
+    {
+        path: "services/getInfo",
+        element: <Service2/>,
     },
     {
         path: "requests",

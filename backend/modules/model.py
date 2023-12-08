@@ -1,6 +1,6 @@
-from datetime import datetime
+
 from pydantic import BaseModel
-from sqlalchemy import MetaData, Table, Column, Integer, String, TIMESTAMP,  ForeignKey, JSON, DateTime,UniqueConstraint, Boolean
+from sqlalchemy import MetaData, Table, Column, Integer, String, TIMESTAMP,  ForeignKey, JSON, DateTime,LargeBinary,UniqueConstraint, Boolean
 
 metadata = MetaData()
 
@@ -33,6 +33,23 @@ roles = Table(
     Column("permissions", JSON),
 )
 
+telegram_users = Table(
+    "telegram_users",
+    metadata,
+    Column("id", Integer, primary_key=True),
+    Column("chat_id", String),
+    Column("username", String),
+    UniqueConstraint("chat_id")
+)
+
+pdf_info = Table(
+    "pdf_info",
+    metadata,
+    Column("id", Integer, primary_key=True),
+    Column("chat_id", String),
+    Column("pdf", LargeBinary),
+)
+
 users = Table(
     "users",
     metadata,
@@ -60,6 +77,21 @@ types = Table(
     Column("id", Integer),
     Column("name", String, primary_key=True),
 )
+
+request2 = Table(
+    "request2",
+    metadata,
+    Column("id", Integer,primary_key=True),
+    Column("username", String),
+    Column("bin", String),
+    Column("result", JSON),
+)
+
+class Request2Read(BaseModel):
+    # id: int
+    username: str
+    bin: str
+    result: dict
 
 class UserCreate(BaseModel):
     username: str

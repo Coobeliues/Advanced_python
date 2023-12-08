@@ -7,7 +7,8 @@ from fastapi.security import OAuth2PasswordBearer
 from dbase import DB
 import modules.model as _model
 
-# Configuration
+
+
 SECRET_KEY = "2e398ac8a4e549cc5928d00f6ff3484f38c0e2c6c214cd7998d3e5922c84b56f6"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
@@ -73,3 +74,4 @@ def check_is_done():
 
         return wrapper
     return decorator
+
