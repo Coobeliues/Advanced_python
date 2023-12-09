@@ -1,7 +1,7 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+import uvicorn
 from dbase import DB
 from modules import auth, users, userServices, managerServices
 
@@ -31,3 +31,7 @@ app.include_router(auth.router, prefix="/auth", tags=["authentication"])
 app.include_router(users.router, prefix="/users", tags=["users"])
 app.include_router(userServices.router, prefix="/services", tags=["services"])
 app.include_router(managerServices.router, prefix="/manager", tags=["manager"])
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)

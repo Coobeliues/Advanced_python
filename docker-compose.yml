@@ -74,10 +74,12 @@ services:
       context: ./backend
     ports:
       - "8000:8000"
-    command: ["/app/docker/app.sh"]
+    command: ["./docker/app.sh"]
     depends_on:
       - db
       - kafka
+    # volumes:
+    #   - ./backend:/app
 
   frontend:
     build:

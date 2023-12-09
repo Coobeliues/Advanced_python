@@ -9,9 +9,11 @@ uvicorn==0.15.0
 python-dotenv==0.19.1
 alembic
 gunicorn
+uvicorn
 asyncpg
 psycopg2-binary
 pyTelegramBotAPI
 requests
 telebot
 fpdf
+aiogram

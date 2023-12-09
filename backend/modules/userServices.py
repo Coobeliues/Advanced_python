@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends
-import json
 import modules.model as _model
 from dbase import DB
 from modules.services import check_is_done, get_user_information
@@ -33,22 +32,8 @@ async def check_company(bin: str, lang: str):
     result = check_company_by_bin(bin, lang)
     return result
 
-async def find_company(bin: str):
-    url = f"https://old.stat.gov.kz/api/juridical/counter/api/?bin={bin}&lang=ru"
-    try:
-        response = requests.get(url)
-        if response.status_code == 200:
-            data = response.json()
-            company = data.get("obj", {})  
-            return company
-        return None
-    except Exception as e:
-        print(e)
-        return {"message" : "Not found"}
-
 @router.post("/getInfo")
-async def check_company(request: _model.Request2Read):
-    # result = await find_company(request.bin)  
+async def check_company(request: _model.Request2Read): 
     query = _model.request2.insert().values(username=request.username, bin=request.bin, result=request.result)
     await DB.execute(query)
 

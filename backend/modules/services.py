@@ -36,8 +36,8 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         token_data = _model.TokenData(username=username)
     except jwt.ExpiredSignatureError:
         raise credentials_exception
-    except jwt.JWTError:
-        raise credentials_exception
+    # except jwt.JWTError:
+    #     raise credentials_exception
     return token_data
 
 async def get_user_information(tokendata: _model.TokenData = Depends(get_current_user)):

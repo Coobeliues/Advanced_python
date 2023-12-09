@@ -1,7 +1,6 @@
 
-# import jwt
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, HTTPException, status
 from passlib.context import CryptContext
 
 import modules.model as _model
@@ -10,12 +9,8 @@ from modules.services import create_access_token, get_current_user
 
 router = APIRouter()
 
-
-# Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-
-# Create a user
 @router.post("/register/", response_model=_model.Token)
 async def register(user: _model.UserCreate):
     query = _model.users.select().where(_model.users.c.username == user.username)
@@ -44,7 +39,6 @@ async def register(user: _model.UserCreate):
     access_token = create_access_token(data={"sub": user.username})
     return {"access_token": access_token, "token_type": "bearer", "greeting": user.username}
 
-# Login and get a JWT token
 @router.post("/login/", response_model= _model.Token)
 async def login_for_access_token(user1: _model.UserCreate):
     query = _model.users.select().where(_model.users.c.username == user1.username)
@@ -55,8 +49,6 @@ async def login_for_access_token(user1: _model.UserCreate):
     return {"access_token": create_access_token(data={"username": user1.username}), "token_type": "bearer", "greting" : user["username"]}
 
 
-# Logout
-@router.post("/logout/")
-async def logout(current_user: _model.User = Depends(get_current_user)):
-    # You can implement logout logic here, like blacklisting the token.
-    return {"message": "Logged out successfully", "user": current_user}
+# @router.post("/logout/")
+# async def logout(current_user: _model.User = Depends(get_current_user)):
+#     return {"message": "Logged out successfully", "user": current_user}

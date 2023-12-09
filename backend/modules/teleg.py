@@ -1,56 +1,326 @@
 
-import os
+# # import os
+# # import requests
+# # import telebot
+# # from fpdf import FPDF
+# # import dbase as _dbase
+# # # import model 
+# # from fastapi import HTTPException
+
+# # TELEGRAM_BOT_TOKEN = '6897226082:AAHIKd83Se06Bp-8dd0NKaM-Dw_qffjam2c'
+# # PDF_PATH = '/app/output.pdf'
+
+# # bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
+
+
+# # @bot.message_handler(commands=['start'])
+# # def start(message):
+# #     bot.send_message(message.chat.id, 'Welcome to egov bot!')
+
+
+# # @bot.message_handler(commands=['add_username'])
+# # def add_username(message):
+# #     bot.send_message(message.chat.id, 'Send your username from egov')
+
+
+# # @bot.message_handler(commands=['get_data'])
+# # def get_datasss(message):
+# #     bot.send_message(message.chat.id, 'Enter BIN or IIN to get information about company')
+
+
+# # @bot.message_handler(func=lambda message: True and not message.text.startswith('/'))
+# # def get_data(message):
+# #     user_id = message.from_user.id
+# #     username = ''
+# #     if message.text.isalpha():
+# #         username = message.text
+# #         save_username(username, user_id)
+# #         bot.send_message(message.chat.id, f'Thank you, {username}! Your username has been saved.')
+        
+# #     else:
+# #         bin_iin = message.text
+# #         lang = 'en' 
+# #         data = get_datas(bin_iin, lang)
+
+# #         print(f"API Response: {data}")
+
+# #         if 'success' in data and data['success']:
+# #             generate_pdf(data)
+# #             with open(PDF_PATH, 'rb') as pdf_file:
+# #                 bot.send_document(message.chat.id, pdf_file)
+# #             bot.send_message(message.chat.id, 'Here is your PDF')
+# #         else:
+# #             bot.send_message(message.chat.id, 'Failed to fetch data. Please try again.')
+
+
+# # def get_datas(bin_iin, lang='en'):
+# #     api_url = f'https://old.stat.gov.kz/api/juridical/counter/api/?bin={bin_iin}&lang={lang}'
+# #     response = requests.get(api_url)
+# #     return response.json()
+
+
+# # def generate_pdf(data):
+# #     pdf = FPDF()
+    
+# #     pdf.add_page()
+
+
+# #     pdf.add_font('DejaVuSans', '', '/app/modules/DejaVuSans.ttf', uni=True)
+# #     pdf.set_font("DejaVuSans", size=12)
+
+  
+# #     bin_iin_text = f"BIN/IIN: {data['obj']['bin']}"
+# #     name_text = f"Name: {data['obj']['name']}"
+# #     register_date_text = f"Registration Date: {data['obj']['registerDate']}"
+# #     oked_code_text = f"Main code of the GCoEA: {data['obj']['okedCode']}"
+# #     oked_name_text = f"Type of Economic Activity: {data['obj']['okedName']}"
+# #     secondOkeds_text = f"Secondary code of the GCoEA: {data['obj']['secondOkeds']}"
+# #     krpCode_text = f"Code of CoDE: {data['obj']['secondOkeds']}"
+# #     krpName_text = f"Name of CoDE: {data['obj']['krpName']}"
+# #     krpBfCode_text = f"Code of CoDE (excluding branches): {data['obj']['krpBfCode']}"
+# #     krpBfName_text = f"Name of CoDE: {data['obj']['krpBfName']}"
+# #     kseCode_text = f"CoATO: {data['obj']['kseCode']}"
+# #     kseName_text = f"Name of the economic sector: {data['obj']['kseName']}"
+# #     kfsCode_text = f"KFP code: {data['obj']['kfsCode']}"
+# #     kfsName_text = f"KFP name: {data['obj']['katoId']}"
+# #     katoCode_text = f"CoATO: {data['obj']['katoCode']}"
+# #     katoId_text = f"CoATO Id: {data['obj']['katoId']}"
+# #     katoAddress_text = f"Legal address: {data['obj']['katoAddress']}"
+# #     fio_text = f"Surname, name, patronymic of the head: {data['obj']['fio']}"
+
+
+   
+# #     pdf.multi_cell(0, 10, txt=bin_iin_text)
+# #     pdf.multi_cell(0, 10, txt=name_text)
+# #     pdf.multi_cell(0, 10, txt=register_date_text)
+# #     pdf.multi_cell(0, 10, txt=oked_code_text)
+# #     pdf.multi_cell(0, 10, txt=oked_name_text)
+# #     pdf.multi_cell(0, 10, txt=secondOkeds_text)
+# #     pdf.multi_cell(0, 10, txt=krpCode_text)
+# #     pdf.multi_cell(0, 10, txt=krpName_text)
+# #     pdf.multi_cell(0, 10, txt=krpBfCode_text)
+# #     pdf.multi_cell(0, 10, txt=krpBfName_text)
+# #     pdf.multi_cell(0, 10, txt=kseCode_text)
+# #     pdf.multi_cell(0, 10, txt=kseName_text)
+# #     pdf.multi_cell(0, 10, txt=kfsCode_text)
+# #     pdf.multi_cell(0, 10, txt=kfsName_text)
+# #     pdf.multi_cell(0, 10, txt=katoCode_text)
+# #     pdf.multi_cell(0, 10, txt=katoId_text)
+# #     pdf.multi_cell(0, 10, txt=katoAddress_text)
+# #     pdf.multi_cell(0, 10, txt=fio_text)
+
+
+# #     pdf.output(PDF_PATH)
+# #     print(data)
+
+
+# # async def save_username(username, user_id):
+# #     # query = model.telegram_users.select().where(model.telegram_users.c.username == username)
+# #     # existing_user = await _dbase.DB.fetch_one(query)
+
+# #     # if existing_user:
+# #     #     raise HTTPException(status_code=400, detail="Username already exist")
+    
+# #     # query1 = model.telegram_users.insert().values(username=username,chat_id = user_id)
+# #     # await _dbase.DB.execute(query1)
+# #     pass
+
+
+
+# # if __name__ == '__main__':
+# #     bot.polling(none_stop=True)
+
+# import os
+# import requests
+# import telebot
+# from fpdf import FPDF
+# import dbase as _dbase
+# import modules.model as _model
+# import asyncio
+# from aiogram import Bot, Dispatcher, types
+
+# TELEGRAM_BOT_TOKEN = '6897226082:AAHIKd83Se06Bp-8dd0NKaM-Dw_qffjam2c'
+# PDF_PATH = '/appp/output.pdf'
+
+# bot = Bot(token=TELEGRAM_BOT_TOKEN)
+# dp = Dispatcher(bot)
+
+
+# @dp.message_handler(commands=['start'])
+# async def start(message: types.Message):
+#     await message.answer('Welcome to egov bot!')
+
+# @dp.message_handler(commands=['get_data'])
+# async def get_data_command(message: types.Message):
+#     await message.answer('Send your username from egov')
+
+# @dp.message_handler(lambda message: not message.text.startswith('/'))
+# async def get_data(message: types.Message):
+#     user_id = message.from_user.id
+#     username = message.text
+#     await save_username(username, user_id)
+#     await message.answer(f'Thank you, {username}! Your username has been saved.')
+
+#     query = _model.request2.select(_model.request2.c.bin).where(_model.request2.c.username == username)
+#     bin_iin = await _dbase.DB.fetch_one(query)
+#     lang = 'en'
+#     data = await get_datas(bin_iin, lang)
+
+#     print(f"API Response: {data}")
+
+#     if 'success' in data and data['success']:
+#         generate_pdf(data)
+#         with open(PDF_PATH, 'rb') as pdf_file:
+#             await bot.send_document(message.chat.id, pdf_file)
+#         await message.answer('Here is your PDF')
+#     else:
+#         await message.answer('Failed to fetch data. Please try again.')
+
+# async def save_username(username, user_id):
+#     query = _model.telegram_users.select().where(_model.telegram_users.c.username == username)
+#     existing_user = await _dbase.DB.fetch_one(query)
+
+#     if existing_user:
+#         await bot.send_message(user_id, "Username already exists. Please try another one.")
+#         return 
+    
+#     query1 = _model.telegram_users.insert().values(username=username, chat_id=user_id)
+#     await _dbase.DB.execute(query1)
+
+# def get_datas(bin_iin, lang='en'):
+#     api_url = f'https://old.stat.gov.kz/api/juridical/counter/api/?bin={bin_iin}&lang={lang}'
+#     response = requests.get(api_url)
+#     return response.json()
+
+
+# def generate_pdf(data):
+#     pdf = FPDF()
+    
+#     pdf.add_page()
+
+
+#     pdf.add_font('DejaVuSans', '', '/appp/modules/DejaVuSans.ttf', uni=True)
+#     pdf.set_font("DejaVuSans", size=12)
+
+  
+#     bin_iin_text = f"BIN/IIN: {data['obj']['bin']}"
+#     name_text = f"Name: {data['obj']['name']}"
+#     register_date_text = f"Registration Date: {data['obj']['registerDate']}"
+#     oked_code_text = f"Main code of the GCoEA: {data['obj']['okedCode']}"
+#     oked_name_text = f"Type of Economic Activity: {data['obj']['okedName']}"
+#     secondOkeds_text = f"Secondary code of the GCoEA: {data['obj']['secondOkeds']}"
+#     krpCode_text = f"Code of CoDE: {data['obj']['secondOkeds']}"
+#     krpName_text = f"Name of CoDE: {data['obj']['krpName']}"
+#     krpBfCode_text = f"Code of CoDE (excluding branches): {data['obj']['krpBfCode']}"
+#     krpBfName_text = f"Name of CoDE: {data['obj']['krpBfName']}"
+#     kseCode_text = f"CoATO: {data['obj']['kseCode']}"
+#     kseName_text = f"Name of the economic sector: {data['obj']['kseName']}"
+#     kfsCode_text = f"KFP code: {data['obj']['kfsCode']}"
+#     kfsName_text = f"KFP name: {data['obj']['katoId']}"
+#     katoCode_text = f"CoATO: {data['obj']['katoCode']}"
+#     katoId_text = f"CoATO Id: {data['obj']['katoId']}"
+#     katoAddress_text = f"Legal address: {data['obj']['katoAddress']}"
+#     fio_text = f"Surname, name, patronymic of the head: {data['obj']['fio']}"
+
+
+   
+#     pdf.multi_cell(0, 10, txt=bin_iin_text)
+#     pdf.multi_cell(0, 10, txt=name_text)
+#     pdf.multi_cell(0, 10, txt=register_date_text)
+#     pdf.multi_cell(0, 10, txt=oked_code_text)
+#     pdf.multi_cell(0, 10, txt=oked_name_text)
+#     pdf.multi_cell(0, 10, txt=secondOkeds_text)
+#     pdf.multi_cell(0, 10, txt=krpCode_text)
+#     pdf.multi_cell(0, 10, txt=krpName_text)
+#     pdf.multi_cell(0, 10, txt=krpBfCode_text)
+#     pdf.multi_cell(0, 10, txt=krpBfName_text)
+#     pdf.multi_cell(0, 10, txt=kseCode_text)
+#     pdf.multi_cell(0, 10, txt=kseName_text)
+#     pdf.multi_cell(0, 10, txt=kfsCode_text)
+#     pdf.multi_cell(0, 10, txt=kfsName_text)
+#     pdf.multi_cell(0, 10, txt=katoCode_text)
+#     pdf.multi_cell(0, 10, txt=katoId_text)
+#     pdf.multi_cell(0, 10, txt=katoAddress_text)
+#     pdf.multi_cell(0, 10, txt=fio_text)
+
+
+#     pdf.output(PDF_PATH)
+#     print(data)
+
+
+# # async def save_username(username, user_id):
+# #     query = _model.telegram_users.select().where(_model.telegram_users.c.username == username)
+# #     existing_user = await _dbase.DB.fetch_one(query)
+
+# #     if existing_user:
+# #         bot.send_message(user_id, "Username already exists. Please try another one.")
+# #         return 
+    
+# #     query1 = _model.telegram_users.insert().values(username=username, chat_id=user_id)
+# #     await _dbase.DB.execute(query1)
+
+# async def main():
+#     await dp.start_polling()
+
+# if __name__ == '__main__':
+#     asyncio.run(main())
 import requests
 import telebot
 from fpdf import FPDF
 import dbase as _dbase
-import model as _model
-from fastapi import HTTPException
+import modules.model as _model
+import asyncio
+from aiogram import Bot, Dispatcher, types
 
 TELEGRAM_BOT_TOKEN = '6897226082:AAHIKd83Se06Bp-8dd0NKaM-Dw_qffjam2c'
-PDF_PATH = '/app/output.pdf'
+PDF_PATH = '/appp/output.pdf'
 
-bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
+bot = Bot(token=TELEGRAM_BOT_TOKEN)
+dp = Dispatcher(bot)
 
-
-@bot.message_handler(commands=['start'])
-def start(message):
-    bot.send_message(message.chat.id, 'Welcome to egov bot!')
-
-
-@bot.message_handler(commands=['add_username'])
-def add_username(message):
-    bot.send_message(message.chat.id, 'Send your username from egov')
+@dp.message_handler(commands=['start'])
+async def start(message: types.Message):
+    await message.answer('Welcome to egov bot!')
 
 
-@bot.message_handler(commands=['get_data'])
-def get_datasss(message):
-    bot.send_message(message.chat.id, 'Enter BIN or IIN to get information about company')
+@dp.message_handler(commands=['get_data'])
+async def get_data_command(message: types.Message):
+    await message.answer('Send your username from egov')
 
 
-@bot.message_handler(func=lambda message: True and not message.text.startswith('/'))
-def get_data(message):
+@dp.message_handler(lambda message: not message.text.startswith('/'))
+async def get_data(message: types.Message):
     user_id = message.from_user.id
-    username = ''
-    if message.text.isalpha():
-        username = message.text
-        save_username(username, user_id)
-        bot.send_message(message.chat.id, f'Thank you, {username}! Your username has been saved.')
-        
+    username = message.text
+    await save_username(username, user_id)
+    await message.answer(f'Thank you, {username}! Your username has been saved.')
+
+    query = _model.request2.select(_model.request2.c.bin).where(_model.request2.c.username == username)
+    bin_iin = await _dbase.DB.fetch_one(query)
+    lang = 'en'
+    data = await get_datas(bin_iin, lang)
+
+    print(f"API Response: {data}")
+
+    if 'success' in data and data['success']:
+        generate_pdf(data)
+        with open(PDF_PATH, 'rb') as pdf_file:
+            await bot.send_document(message.chat.id, pdf_file)
+        await message.answer('Here is your PDF')
     else:
-        bin_iin = message.text
-        lang = 'en' 
-        data = get_datas(bin_iin, lang)
+        await message.answer('Failed to fetch data. Please try again.')
 
-        print(f"API Response: {data}")
 
-        if 'success' in data and data['success']:
-            generate_pdf(data)
-            with open(PDF_PATH, 'rb') as pdf_file:
-                bot.send_document(message.chat.id, pdf_file)
-            bot.send_message(message.chat.id, 'Here is your PDF')
-        else:
-            bot.send_message(message.chat.id, 'Failed to fetch data. Please try again.')
+async def save_username(username, user_id):
+    query = _model.telegram_users.select().where(_model.telegram_users.c.username == username)
+    existing_user = await _dbase.DB.fetch_one(query)
+
+    if existing_user:
+        await bot.send_message(user_id, "Username already exists. Please try another one.")
+        return
+
+    query1 = _model.telegram_users.insert().values(username=username, chat_id=user_id)
+    await _dbase.DB.execute(query1)
 
 
 def get_datas(bin_iin, lang='en'):
@@ -61,11 +331,10 @@ def get_datas(bin_iin, lang='en'):
 
 def generate_pdf(data):
     pdf = FPDF()
-    
+
     pdf.add_page()
 
-
-    pdf.add_font('DejaVuSans', '', '/app/modules/DejaVuSans.ttf', uni=True)
+    pdf.add_font('DejaVuSans', '', '/appp/modules/DejaVuSans.ttf', uni=True)
     pdf.set_font("DejaVuSans", size=12)
 
   
@@ -113,18 +382,9 @@ def generate_pdf(data):
     pdf.output(PDF_PATH)
     print(data)
 
-
-async def save_username(username, user_id):
-    query = _model.telegram_users.select().where(_model.telegram_users.c.username == username)
-    existing_user = await _dbase.DB.fetch_one(query)
-
-    if existing_user:
-        raise HTTPException(status_code=400, detail="Username already exist")
-    
-    query1 = _model.telegram_users.insert().values(username=username,chat_id = user_id)
-    await _dbase.DB.execute(query1)
-
+async def main():
+    await dp.start_polling()
 
 
 if __name__ == '__main__':
-    bot.polling(none_stop=True)
+    asyncio.run(main())
