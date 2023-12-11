@@ -29,7 +29,6 @@ RUN pip install -r requirements.txt
 COPY . /appp
 
 COPY DejaVuSans.ttf /appp/modules/DejaVuSans.ttf
-RUN pip install aiogram 
 RUN chmod a+x docker/*.sh
 
 # CMD ["gunicorn", "main:app", "--workers", "4", "--worker-class", "uvicorn.workers.UvicornWorker", "--bind=0.0.0.0:8000","./docker/app.sh"]
