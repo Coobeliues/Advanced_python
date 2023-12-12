@@ -24,8 +24,10 @@ RUN mkdir /appp
 ENV PYTHONPATH "${PYTHONPATH}:/appp"
 WORKDIR /appp
 COPY requirements.txt .
-RUN pip install -r requirements.txt
 
+RUN pip install -r requirements.txt
+RUN pip install --upgrade kafka-python
+RUN pip install aiokafka
 COPY . /appp
 
 COPY DejaVuSans.ttf /appp/modules/DejaVuSans.ttf
