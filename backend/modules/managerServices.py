@@ -1,9 +1,9 @@
-from fastapi import APIRouter,HTTPException
+from datetime import datetime
+
 import modules.model as _model
 from dbase import DB
-import modules.model as _model
+from fastapi import APIRouter, HTTPException
 from sqlalchemy import update
-from datetime import datetime
 
 router = APIRouter()
 

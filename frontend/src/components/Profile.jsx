@@ -3,20 +3,6 @@ import { UserContext } from "../context/UserContext";
 import "./Profile.css";  
 import {Link} from "react-router-dom";
 
-// const extractDateComponents = (birthdate) => {
-//   const dateObj = new Date(birthdate);
-
-//   if (isNaN(dateObj.getTime())) {
-//     // Handle invalid date string
-//     return null;
-//   }
-
-//   const day = dateObj.getDate();
-//   const month = dateObj.toLocaleString('default', { month: 'long' });
-//   const year = dateObj.getFullYear();
-
-//   return { day, month, year };
-// };
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -41,7 +27,6 @@ const Profile = () => {
     fetchUser();
   }, [token]);
 
-//   const birthdateComponents = user ? extractDateComponents(user.birthdate) : null;
 
   return (
     <>

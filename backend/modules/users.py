@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends
 import modules.model as _model
 from dbase import DB
-from modules.services import get_current_user,get_user_information
+from fastapi import APIRouter, Depends
+from modules.services import get_current_user, get_user_information
 
 router = APIRouter()
 

@@ -1,37 +1,24 @@
-# FROM python:3.9-slim
-
-# ENV PYTHONPATH "${PYTHONPATH}:/appp"
-# RUN pip install psycopg2-binary
-# RUN pip install gunicorn
-
-# RUN mkdir /appp
-# WORKDIR /appp
-
-# COPY requirements.txt .
-# RUN pip install -r requirements.txt
-
-# COPY . /appp
-
-# COPY DejaVuSans.ttf /app/modules/DejaVuSans.ttf
-
-# RUN chmod a+x docker/*.sh
-
-# WORKDIR /appp
-# CMD gunicorn appp:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:8000
-FROM python:3.9-slim
+FROM python:3.9-slim AS base
+ENV PYTHONUNBUFFERED=1 \
+    TZ=Asia/Almaty \
+    LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8
 
 RUN mkdir /appp
 ENV PYTHONPATH "${PYTHONPATH}:/appp"
 WORKDIR /appp
+
 COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install confluent_kafka
 
-RUN pip install -r requirements.txt
-RUN pip install --upgrade kafka-python
-RUN pip install aiokafka
-COPY . /appp
+FROM base AS production
 
-COPY DejaVuSans.ttf /appp/modules/DejaVuSans.ttf
+COPY . .
+
+# COPY DejaVuSans.ttf /appp/modules/DejaVuSans.ttf
+
 RUN chmod a+x docker/*.sh
 
-# CMD ["gunicorn", "main:app", "--workers", "4", "--worker-class", "uvicorn.workers.UvicornWorker", "--bind=0.0.0.0:8000","./docker/app.sh"]
-CMD gunicorn main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker--bind=0.0.0.0:8000
+CMD ["gunicorn", "main:app", "--workers", "4", "--worker-class", "uvicorn.workers.UvicornWorker", "--bind=0.0.0.0:8000"]
+

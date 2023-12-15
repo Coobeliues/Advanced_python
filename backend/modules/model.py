@@ -1,6 +1,8 @@
 
 from pydantic import BaseModel
-from sqlalchemy import MetaData, Table, Column, Integer, String, TIMESTAMP,  ForeignKey, JSON, DateTime,LargeBinary,UniqueConstraint, Boolean
+from sqlalchemy import (JSON, TIMESTAMP, Boolean, Column, DateTime, ForeignKey,
+                        Integer, LargeBinary, MetaData, String, Table,
+                        UniqueConstraint)
 
 metadata = MetaData()
 
@@ -84,14 +86,14 @@ request2 = Table(
     Column("id", Integer,primary_key=True),
     Column("username", String),
     Column("bin", String),
-    Column("result", JSON),
+    Column("status",Boolean,default= False),
 )
 
 class Request2Read(BaseModel):
     # id: int
     username: str
     bin: str
-    result: dict
+    status: bool
 
 class UserCreate(BaseModel):
     username: str

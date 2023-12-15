@@ -6,7 +6,6 @@ import { UserContext } from "../context/UserContext";
 import {useNavigate} from "react-router-dom";
 const Service2 = () => {
   const [token] = useContext(UserContext);
-  const [result, setResult] = useState({});
   const navigate = useNavigate()
   const [bin, setBin] = useState('');
   const [name, setName] = useState('');
@@ -19,11 +18,10 @@ const Service2 = () => {
 
       if (response.status === 200) {
         console.log(response.data)
-        const { exists, Name, Object } = response.data;
+        const { exists, Name} = response.data;
         setCompanyExists(exists);
         setShowSendRequestButton(exists); 
         setName(Name)
-        setResult(Object)
       }
     } catch (error) {
       console.error('Error:', error.message);
@@ -36,7 +34,7 @@ const Service2 = () => {
         const payload = {
                 username: user.username,
                 bin: bin,
-                result: result
+                status: false 
         }
         console.log(payload)
         const response = await fetch('http://localhost:8000/services/getInfo', {

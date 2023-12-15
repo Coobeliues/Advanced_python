@@ -1,14 +1,16 @@
 from datetime import datetime, timedelta
 from functools import wraps
-from sqlalchemy import select
+
 import jwt
+import modules.model as _model
+import requests
+from dbase import DB
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from dbase import DB
-import modules.model as _model
+from fpdf import FPDF
+from sqlalchemy import select
 
-
-
+PDF_PATH = '/appp/output.pdf'
 SECRET_KEY = "2e398ac8a4e549cc5928d00f6ff3484f38c0e2c6c214cd7998d3e5922c84b56f6"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
@@ -75,3 +77,54 @@ def check_is_done():
         return wrapper
     return decorator
 
+
+import time
+
+def get_datas(bin_iin, lang='en'):
+    api_url = f'https://old.stat.gov.kz/api/juridical/counter/api/?bin={bin_iin}&lang={lang}'
+    print(api_url)
+    try:
+        response = requests.get(api_url)
+        if response.status_code == 429:
+            time.sleep(20)
+            response = requests.get(api_url)
+        response.raise_for_status()
+        return response.json().get("obj", {})
+    except requests.exceptions.RequestException as e:
+        print(f"Error during API request: {e}")
+        return {}
+
+
+def generate_pdf(data):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.add_font('DejaVuSans', '', '/appp/DejaVuSans.ttf', uni=True)
+    pdf.set_font("DejaVuSans", size=12)
+
+    fields = [
+        ("BIN/IIN", "bin"),
+        ("Name", "name"),
+        ("Registration Date", "registerDate"),
+        ("Main code of the GCoEA", "okedCode"),
+        ("Type of Economic Activity", "okedName"),
+        ("Secondary code of the GCoEA", "secondOkeds"),
+        ("Code of CoDE", "krpCode"),
+        ("Name of CoDE", "krpName"),
+        ("Code of CoDE (excluding branches)", "krpBfCode"),
+        ("Name of CoDE", "krpBfName"),
+        ("CoATO", "kseCode"),
+        ("Name of the economic sector", "kseName"),
+        ("KFP code", "kfsCode"),
+        ("KFP name", "kfsName"),
+        ("CoATO", "katoCode"),
+        ("CoATO Id", "katoId"),
+        ("Legal address", "katoAddress"),
+        ("Surname, name, patronymic of the head", "fio")
+    ]
+
+    for label, key in fields:
+        value = data.get(key, "N/A") 
+        text = f"{label}: {value}"
+        pdf.multi_cell(0, 10, txt=text)
+
+    pdf.output(PDF_PATH)

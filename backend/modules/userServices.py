@@ -1,91 +1,87 @@
-from fastapi import APIRouter, Depends
-import modules.model as _model
-from dbase import DB
-from modules.services import check_is_done, get_user_information
-import requests
-from aiokafka import AIOKafkaProducer, AIOKafkaConsumer
 import json
-from fpdf import FPDF
-import asyncio
+import confluent_kafka as _a
+import modules.model as _model
+import requests
+from dbase import DB
+from sqlalchemy import select
+from modules.mail import send_email
+from fastapi import APIRouter, Depends
+from modules.teleg import send_to_bot
+from modules.services import (check_is_done, generate_pdf, get_datas,
+                              get_user_information)
 
 router = APIRouter()
-KAFKA_BOOTSTRAP_SERVERS = 'broker:9094'
-KAFKA_TOPIC_1 = 'topic1'
-KAFKA_TOPIC_2 = 'topic2'
-async def produce_to_kafka(data):
-    producer_conf = {
-        'bootstrap_servers': KAFKA_BOOTSTRAP_SERVERS
-    }
-    producer = AIOKafkaProducer(**producer_conf)
-    
-    await producer.start()
-    await producer.send_and_wait(KAFKA_TOPIC_1, key=None, value=data)
-    await producer.stop()
+producer_conf = {'bootstrap.servers': 'broker:9094', 'client.id': 'my-app'}
+consumer_conf = {'bootstrap.servers': 'broker:9094', 'group.id': 'my-group', 'auto.offset.reset': 'latest'}
+consumer_conf1 = {'bootstrap.servers': 'broker:9094', 'group.id': 'my-group1', 'auto.offset.reset': 'earliest'}
+producer = _a.Producer(producer_conf)
+consumer = _a.Consumer(consumer_conf)
+consumer1 = _a.Consumer(consumer_conf1)
 
-PDF_PATH = '/appp/output.pdf'
+async def consume(topic):
+    if topic == "topic1":
+        consumer.subscribe([topic])
+        try:
+            while True:
+                msg = consumer.poll(1.0)
+                if msg is None:
+                    continue
+                if msg.error():
+                    if msg.error().code() == _a.KafkaError._PARTITION_EOF:
+                        continue
+                    else:
+                        print(f"Consumer error: {msg.error()}")
+                        break
+                print("_______________")
+                msg_value = msg.value().decode('utf-8')
+                print(msg_value)
+                print("_______________")
+                if msg_value:
+                    print(f"Received message from topic1: {msg_value}")
+                    yield msg_value
+        except KeyboardInterrupt:
+            pass
+        finally:
+            consumer.close()
+    elif topic == "topic2":
+        consumer1.subscribe([topic])
+        try:
+            while True:
+                msg = consumer1.poll(1.0)
+                if msg is None:
+                    continue
+                if msg.error():
+                    if msg.error().code() == _a.KafkaError._PARTITION_EOF:
+                        continue
+                    else:
+                        print(f"Consumer error: {msg.error()}")
+                        break
+                msg_value = msg.value().decode('utf-8')
+                if msg_value:
+                    try:
+                        data = json.loads(msg_value)
+                        yield data
+                    except json.JSONDecodeError as e:
+                        print(f"Error decoding JSON: {e}")
+        except KeyboardInterrupt:
+            pass
+        finally:
+            consumer1.close()
 
-async def bin_info_consumer():
-    consumer = AIOKafkaConsumer(KAFKA_TOPIC_1, bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS, group_id='bin_info_group')
-    await consumer.start()
-    
-    async for message in consumer:
-        bin_info_request = json.loads(message.value)
-        parsed_data = process_bin_info(bin_info_request)
-        
-        producer = AIOKafkaProducer(bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS)
-        await producer.start()
-        await producer.send_and_wait(KAFKA_TOPIC_2, value=json.dumps(parsed_data).encode('utf-8'))
-        await producer.stop()
-
-async def continuous_bin_info_consumer():
-    while True:
-        await bin_info_consumer()
-        await asyncio.sleep(10)
-
-async def pdf_generation_consumer(bin_iin):
-    consumer = AIOKafkaConsumer(KAFKA_TOPIC_2, bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS, group_id='pdf_generation_group')
-    await consumer.start()
-    
-    async for message in consumer:
-        parsed_data = json.loads(message.value)
-        if parsed_data.get("bin") == bin_iin:
-            generate_pdf(parsed_data)
-            return parsed_data
- 
-
-def process_bin_info(bin_info_request):
-    bin_data = get_datas(bin_info_request["bin"])
-    return bin_data 
-
-def get_datas(bin_iin, lang='en'):
-    api_url = f'https://old.stat.gov.kz/api/juridical/counter/api/?bin={bin_iin}&lang={lang}'
+async def produce(topic, data: dict):
     try:
-        response = requests.get(api_url)
-        response.raise_for_status()
-        return response.json()
-    except requests.exceptions.RequestException as e:
-        print(f"Error during API request: {e}")
-        return {}
+        data = json.dumps(data).encode('utf-8')
+        producer.produce(topic, value=data)
+        producer.flush()
+    except Exception as e:
+        print(f"Failed to publish message to Kafka: {e}")
     
-def generate_pdf(data):
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font("Arial", size=12)
-    if 'bin' in data:
-        for key, value in data.items():
-            pdf.cell(0, 10, f"{key}: {value}", ln=True)
-        pdf.output(PDF_PATH)
-    else:
-        print("Key 'bin' not found in data")
-
-
-
-# @router.post("/editInfo")
-# @check_is_done()
-# async def edit_personal_info(user: _model.UserRead, user1: _model.UserRead = Depends(get_user_information)):
-#     user_data = user.dict()
-#     query = _model.requests.insert().values(user_id=user1.user_id, is_done=False, confirmed = False, type = "Editing personal info", datas_from_users=user_data)
-#     result = await DB.execute(query)
+@router.post("/editInfo")
+@check_is_done()
+async def edit_personal_info(user: _model.UserRead, user1: _model.UserRead = Depends(get_user_information)):
+    user_data = user.dict()
+    query = _model.requests.insert().values(user_id=user1.user_id, is_done=False, confirmed = False, type = "Editing personal info", datas_from_users=user_data)
+    result = await DB.execute(query)
   
 def check_company_by_bin(bin: str, lang: str):
     url = f"https://old.stat.gov.kz/api/juridical/counter/api/?bin={bin}&lang={lang}"
@@ -94,20 +90,12 @@ def check_company_by_bin(bin: str, lang: str):
         if response.status_code == 200:
             data = response.json()
             company_exists = data.get("success", False)
-            obj = data.get("obj", {})
             name = data.get("obj", {}).get("name", "")  
-            return {"exists": company_exists, "Name": name, "Object":obj}
+            return {"exists": company_exists, "Name": name}
         return {"exists": False, "Name": ""}
     except Exception as e:
         print(e)
         return {"exists": False, "Name": ""}
-
-@router.post("/editInfo")
-@check_is_done()
-async def edit_personal_info(user: _model.UserRead, user1: _model.UserRead = Depends(get_user_information)):
-    user_data = user.dict()
-    query = _model.requests.insert().values(user_id=user1.user_id, is_done=False, confirmed=False, type="Editing personal info", datas_from_users=user_data)
-    result = await DB.execute(query)
 
 @router.get("/check-company/{bin}/{lang}")
 async def check_company(bin: str, lang: str):
@@ -116,10 +104,27 @@ async def check_company(bin: str, lang: str):
 
 @router.post("/getInfo")
 async def check_company(request: _model.Request2Read): 
-    query = _model.request2.insert().values(username=request.username, bin=request.bin, result=request.result)
+    query = _model.request2.insert().values(username=request.username, bin=request.bin, status=False)
     await DB.execute(query)
-    data = json.dumps({"bin": request.bin}).encode('utf-8')
+    await produce("topic1", {"bin":request.bin})
     
-    await produce_to_kafka(data)
-    
-    asyncio.create_task(continuous_bin_info_consumer())
+    async for bin_data in consume("topic1"):
+        bin_value = json.loads(bin_data).get("bin").strip('"')
+        detailed_data = get_datas(bin_value)
+        await produce("topic2", json.dumps(detailed_data))
+        async for topic2_data in consume("topic2"):
+            try:
+                data_from_topic2 = json.loads(topic2_data)
+                generate_pdf(data_from_topic2)
+                print("jjjjjjj")
+            except Exception as e:
+                print(f"Error processing data from topic2: {e}")
+    query1 = select([_model.telegram_users.c.chat_id]).where((_model.telegram_users.c.username == request.username))
+    result = await DB.fetch_one(query1)
+    chat_id = result[0]
+    send_to_bot(chat_id)
+    query2 = select([_model.users_info.c.email]).where((_model.users_info.c.username == request.username))
+    result2 = await DB.fetch_one(query2)
+    email = result2[0]
+    send_email(email)
+

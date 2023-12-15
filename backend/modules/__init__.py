@@ -1,1 +1,2 @@
-from . import auth, services, users, model, userServices, managerServices, teleg
+from . import (auth, managerServices, model, services, teleg, users,
+               userServices)

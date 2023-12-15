@@ -1,11 +1,39 @@
-import requests
-from fpdf import FPDF
+
+# import requests
+
+# # Replace 'YOUR_BOT_TOKEN' with your actual Telegram bot token
+# TELEGRAM_BOT_TOKEN = '6897226082:AAHIKd83Se06Bp-8dd0NKaM-Dw_qffjam2c'
+# # Replace 'USER_CHAT_ID' with the actual chat ID of the user you want to send the file to
+# USER_CHAT_ID = '406085612'
+
+# # URL for the Telegram Bot API sendDocument endpoint
+# api_url = f'https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendDocument'
+
+# # Open the file you want to send
+# with open('D:/e_tg_egov_pdf/output.pdf', 'rb') as file:
+#     files = {'document': ('output.pdf', file)}
+
+#     # Set the chat_id and other optional parameters
+#     params = {'chat_id': USER_CHAT_ID, 'caption': 'Optional caption for the document'}
+
+#     # Make the request to send the document
+#     response = requests.post(api_url, params=params, files=files)
+
+#     # Check the response
+#     if response.status_code == 200:
+#         print('Document sent successfully!')
+#     else:
+#         print(f'Failed to send document. Status code: {response.status_code}, Response: {response.text}')
+
+import asyncio
+
+import confluent_kafka as _a
 import dbase as _dbase
 import modules.model as _model
-import asyncio
+import modules.services as _services
 from aiogram import Bot, Dispatcher, types
-from sqlalchemy import select
-import modules.userServices as _userServices
+from fpdf import FPDF
+from sqlalchemy import select, update
 
 
 async def connect_to_db():
@@ -15,7 +43,8 @@ async def disconnect_from_db():
     await _dbase.DB.disconnect()
 
 TELEGRAM_BOT_TOKEN = '6897226082:AAHIKd83Se06Bp-8dd0NKaM-Dw_qffjam2c'
-PDF_PATH = '/appp/output.pdf'
+
+api_url = f'https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendDocument'
 
 bot = Bot(token=TELEGRAM_BOT_TOKEN)
 dp = Dispatcher(bot)
@@ -28,39 +57,27 @@ async def on_shutdown(dp):
     
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
-    await message.answer('Welcome to egov bot!')
+    await message.answer('Welcome to egov bot!Send your username from egov')
 
-@dp.message_handler(commands=['get_data'])
-async def get_data_command(message: types.Message):
-    await message.answer('Send your username from egov')
 
 @dp.message_handler(lambda message: not message.text.startswith('/'))
-async def get_data(message: types.Message):
+async def start(message: types.Message):
     user_id = message.from_user.id
     username = message.text
     res = await save_username(username, user_id)
-    if not res :
+    if res:
         await message.answer(f'Thank you, {username}! Your username has been saved.')
-    else : 
-        await message.answer(f'{username}, wait for the results.')
-
-    query = select([_model.request2.c.bin]).where(_model.request2.c.username == username)
-    result = await _dbase.DB.fetch_one(query)
-    
-    if result is not None:
-        bin_iin = result[0] 
-        # lang = 'en'
-        data = await _userServices.pdf_generation_consumer(bin_iin)
-
-        if 'success' in data and data['success']:
-            # _userServices.generate_pdf(data)
-            with open(PDF_PATH, 'rb') as pdf_file:
-                await bot.send_document(message.chat.id, pdf_file)
-            await message.answer('Here is your PDF')
-        else:
-            await message.answer('Failed to fetch data. Please try again.')
     else:
-        await message.answer('Username not found. Please try again.')
+        await message.answer(f'Your username already exist')
+        # with open(_services.PDF_PATH, 'rb') as pdf_file:
+        #     await bot.send_document(message.chat.id, pdf_file)
+        # await message.answer('Here is your PDF')
+        # update_query = (
+        #     update(_model.request2)
+        #     .where((_model.request2.c.username == username) & (_model.request2.c.bin == bin_iin))
+        #     .values(status=True)
+        # )
+        # await _dbase.DB.execute(update_query)
 
 async def save_username(username, user_id):
     query = _model.telegram_users.select().where(_model.telegram_users.c.username == username)
@@ -73,55 +90,21 @@ async def save_username(username, user_id):
         await _dbase.DB.execute(query1)
         return True
 
+# with open('D:/e_tg_egov_pdf/output.pdf', 'rb') as file:
+#     files = {'document': ('output.pdf', file)}
 
-# def generate_pdf(data):
-#     pdf = FPDF()
-#     pdf.add_page()
-#     pdf.add_font('DejaVuSans', '', '/appp/DejaVuSans.ttf', uni=True)
-#     pdf.set_font("DejaVuSans", size=12)
+#     # Set the chat_id and other optional parameters
+#     params = {'chat_id': USER_CHAT_ID, 'caption': 'Optional caption for the document'}
 
-#     bin_iin_text = f"BIN/IIN: {data['obj']['bin']}"
-#     name_text = f"Name: {data['obj']['name']}"
-#     register_date_text = f"Registration Date: {data['obj']['registerDate']}"
-#     oked_code_text = f"Main code of the GCoEA: {data['obj']['okedCode']}"
-#     oked_name_text = f"Type of Economic Activity: {data['obj']['okedName']}"
-#     secondOkeds_text = f"Secondary code of the GCoEA: {data['obj']['secondOkeds']}"
-#     krpCode_text = f"Code of CoDE: {data['obj']['secondOkeds']}"
-#     krpName_text = f"Name of CoDE: {data['obj']['krpName']}"
-#     krpBfCode_text = f"Code of CoDE (excluding branches): {data['obj']['krpBfCode']}"
-#     krpBfName_text = f"Name of CoDE: {data['obj']['krpBfName']}"
-#     kseCode_text = f"CoATO: {data['obj']['kseCode']}"
-#     kseName_text = f"Name of the economic sector: {data['obj']['kseName']}"
-#     kfsCode_text = f"KFP code: {data['obj']['kfsCode']}"
-#     kfsName_text = f"KFP name: {data['obj']['katoId']}"
-#     katoCode_text = f"CoATO: {data['obj']['katoCode']}"
-#     katoId_text = f"CoATO Id: {data['obj']['katoId']}"
-#     katoAddress_text = f"Legal address: {data['obj']['katoAddress']}"
-#     fio_text = f"Surname, name, patronymic of the head: {data['obj']['fio']}"
+#     # Make the request to send the document
+#     response = requests.post(api_url, params=params, files=files)
 
+#     # Check the response
+#     if response.status_code == 200:
+#         print('Document sent successfully!')
+#     else:
+#         print(f'Failed to send document. Status code: {response.status_code}, Response: {response.text}')
 
-   
-#     pdf.multi_cell(0, 10, txt=bin_iin_text)
-#     pdf.multi_cell(0, 10, txt=name_text)
-#     pdf.multi_cell(0, 10, txt=register_date_text)
-#     pdf.multi_cell(0, 10, txt=oked_code_text)
-#     pdf.multi_cell(0, 10, txt=oked_name_text)
-#     pdf.multi_cell(0, 10, txt=secondOkeds_text)
-#     pdf.multi_cell(0, 10, txt=krpCode_text)
-#     pdf.multi_cell(0, 10, txt=krpName_text)
-#     pdf.multi_cell(0, 10, txt=krpBfCode_text)
-#     pdf.multi_cell(0, 10, txt=krpBfName_text)
-#     pdf.multi_cell(0, 10, txt=kseCode_text)
-#     pdf.multi_cell(0, 10, txt=kseName_text)
-#     pdf.multi_cell(0, 10, txt=kfsCode_text)
-#     pdf.multi_cell(0, 10, txt=kfsName_text)
-#     pdf.multi_cell(0, 10, txt=katoCode_text)
-#     pdf.multi_cell(0, 10, txt=katoId_text)
-#     pdf.multi_cell(0, 10, txt=katoAddress_text)
-#     pdf.multi_cell(0, 10, txt=fio_text)
-
-#     pdf.output(PDF_PATH)
-#     print(data)
 
 async def main():
     await connect_to_db()

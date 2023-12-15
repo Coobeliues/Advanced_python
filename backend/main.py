@@ -1,9 +1,9 @@
 
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from dbase import DB
-from modules import auth, users, userServices, managerServices
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from modules import auth, managerServices, users, userServices
 
 app = FastAPI()
 app.add_middleware(
