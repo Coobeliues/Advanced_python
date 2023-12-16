@@ -6,9 +6,10 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 
-def send_email(email:str):
+def send_email(email: str):
+    print(email)
     sender = "e.naryshov@gmail.com"
-    password = ''
+    password = 'walk kafq scgw dkiv'
     receiver = email 
     subject = 'EGOV'
     message =  "Here is your PDF file"
@@ -25,18 +26,17 @@ def send_email(email:str):
 
         body = MIMEText(message)
         msg.attach(body)
-
-        pdf_directory = r'/appp/output.pdf'
-        for filename in os.listdir(pdf_directory):
-            if filename.endswith('.pdf'):
-                with open(os.path.join(pdf_directory, filename), 'rb') as pdf_file:
-                    pdf_attachment = MIMEApplication(pdf_file.read(), _subtype="pdf")
-                    pdf_file.close()
-                    pdf_attachment.add_header('Content-Disposition', 'attachment', filename=filename)
-                    msg.attach(pdf_attachment)
-
+        pdf_file_path = '/appp/output.pdf'
+        if os.path.exists(pdf_file_path):
+            with open(pdf_file_path, 'rb') as pdf_file:
+                pdf_attachment = MIMEApplication(pdf_file.read(), _subtype="pdf")
+                pdf_file.close()
+                pdf_attachment.add_header('Content-Disposition', 'attachment', filename='output.pdf')
+                msg.attach(pdf_attachment)
+                print(msg)
+        else:
+            print("PDF file not found at {pdf_file_path}")
         server.sendmail(sender, receiver, msg.as_string())
-        return 'The message was sent successfully!'
     except Exception as ex:
         return f"{ex}\nError!"
     finally:

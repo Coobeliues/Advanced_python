@@ -6,7 +6,7 @@ from dbase import DB
 from sqlalchemy import select
 from modules.mail import send_email
 from fastapi import APIRouter, Depends
-from modules.teleg import send_to_bot
+from modules.teleg import send_pdf_bot
 from modules.services import (check_is_done, generate_pdf, get_datas,
                               get_user_information)
 
@@ -113,18 +113,24 @@ async def check_company(request: _model.Request2Read):
         detailed_data = get_datas(bin_value)
         await produce("topic2", json.dumps(detailed_data))
         async for topic2_data in consume("topic2"):
-            try:
-                data_from_topic2 = json.loads(topic2_data)
-                generate_pdf(data_from_topic2)
-                print("jjjjjjj")
-            except Exception as e:
-                print(f"Error processing data from topic2: {e}")
-    query1 = select([_model.telegram_users.c.chat_id]).where((_model.telegram_users.c.username == request.username))
-    result = await DB.fetch_one(query1)
-    chat_id = result[0]
-    send_to_bot(chat_id)
-    query2 = select([_model.users_info.c.email]).where((_model.users_info.c.username == request.username))
-    result2 = await DB.fetch_one(query2)
-    email = result2[0]
-    send_email(email)
+            data_from_topic2 = json.loads(topic2_data)
+            generate_pdf(data_from_topic2)
+            query2 = select([_model.users_info.c.email]).where((_model.users_info.c.username == request.username))
+            result2 = await DB.fetch_one(query2)
+            email = result2[0]
+            send_email(email)
+            query1 = select([_model.telegram_users.c.chat_id]).where((_model.telegram_users.c.username == request.username))
+            result = await DB.fetch_one(query1)
+            chat_id = result[0]
+            await send_pdf_bot(chat_id)
+            print("jjjjjjj")
+    # print("----")
+    # query1 = select([_model.telegram_users.c.chat_id]).where((_model.telegram_users.c.username == request.username))
+    # result = await DB.fetch_one(query1)
+    # chat_id = result[0]
+    # send_to_bot(chat_id)
+    # query2 = select([_model.users_info.c.email]).where((_model.users_info.c.username == request.username))
+    # result2 = await DB.fetch_one(query2)
+    # email = result2[0]
+    # send_email(email)
 
