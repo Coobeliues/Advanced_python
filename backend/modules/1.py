@@ -17,3 +17,9 @@ def produce():
         return {"status": "error", "message": str(e)}
     
 produce()
+
+# from modules.model import metadata
+
+# # target_metadata = mymodel.Base.metadata
+# target_metadata = metadata
+# qlalchemy.url = postgresql://postgres:601246@host.docker.internal:5432/egov

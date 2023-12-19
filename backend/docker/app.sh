@@ -1,5 +1,5 @@
 #!/bin/bash
-alembic revision --autogenerate -m "Reconciliation and daily amount tables" &
+alembic revision --autogenerate -m "Recreating tables" &
 alembic upgrade head
 
 sleep 5 

@@ -84,13 +84,13 @@ request2 = Table(
     "request2",
     metadata,
     Column("id", Integer,primary_key=True),
-    Column("username", String),
     Column("bin", String),
-    Column("status",Boolean,default= False),
+    Column("data",JSON),
+    Column("BEGIN_DATE",DateTime),
+    Column("END_DATE",DateTime)
 )
 
 class Request2Read(BaseModel):
-    # id: int
     username: str
     bin: str
     status: bool

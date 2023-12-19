@@ -4,7 +4,7 @@ import smtplib
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-
+from modules.services import PDF_PATH
 
 def send_email(email: str):
     print(email)
@@ -26,16 +26,14 @@ def send_email(email: str):
 
         body = MIMEText(message)
         msg.attach(body)
-        pdf_file_path = '/appp/output.pdf'
-        if os.path.exists(pdf_file_path):
-            with open(pdf_file_path, 'rb') as pdf_file:
+        if os.path.exists(PDF_PATH):
+            with open(PDF_PATH, 'rb') as pdf_file:
                 pdf_attachment = MIMEApplication(pdf_file.read(), _subtype="pdf")
                 pdf_file.close()
                 pdf_attachment.add_header('Content-Disposition', 'attachment', filename='output.pdf')
                 msg.attach(pdf_attachment)
-                print(msg)
         else:
-            print("PDF file not found at {pdf_file_path}")
+            print(f"PDF file not found at {PDF_PATH}")
         server.sendmail(sender, receiver, msg.as_string())
     except Exception as ex:
         return f"{ex}\nError!"

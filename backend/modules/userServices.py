@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import json
 import confluent_kafka as _a
 import modules.model as _model
@@ -41,8 +42,8 @@ async def consume(topic):
                     yield msg_value
         except KeyboardInterrupt:
             pass
-        finally:
-            consumer.close()
+        # finally:
+        #     consumer.close()
     elif topic == "topic2":
         consumer1.subscribe([topic])
         try:
@@ -65,8 +66,8 @@ async def consume(topic):
                         print(f"Error decoding JSON: {e}")
         except KeyboardInterrupt:
             pass
-        finally:
-            consumer1.close()
+        # finally:
+        #     consumer1.close()
 
 async def produce(topic, data: dict):
     try:
@@ -104,13 +105,18 @@ async def check_company(bin: str, lang: str):
 
 @router.post("/getInfo")
 async def check_company(request: _model.Request2Read): 
-    query = _model.request2.insert().values(username=request.username, bin=request.bin, status=False)
-    await DB.execute(query)
     await produce("topic1", {"bin":request.bin})
-    
     async for bin_data in consume("topic1"):
         bin_value = json.loads(bin_data).get("bin").strip('"')
-        detailed_data = get_datas(bin_value)
+        current_time = datetime.now()
+        query = select([_model.request2.c.data]).where((_model.request2.c.bin == bin_value) & (_model.request2.c.END_DATE > current_time ))
+        existing_data = await DB.fetch_one(query)
+        if existing_data:
+            detailed_data = existing_data[0]
+        else:
+            detailed_data = get_datas(bin_value)
+            query = _model.request2.insert().values(bin=bin_value,data = detailed_data,BEGIN_DATE = datetime.now(), END_DATE = datetime.now() + timedelta(days=1))
+            await DB.execute(query)
         await produce("topic2", json.dumps(detailed_data))
         async for topic2_data in consume("topic2"):
             data_from_topic2 = json.loads(topic2_data)
@@ -134,3 +140,12 @@ async def check_company(request: _model.Request2Read):
     # email = result2[0]
     # send_email(email)
 
+# request2 = Table(
+#     "request2",
+#     metadata,
+#     Column("id", Integer,primary_key=True),
+#     Column("bin", String),
+#     Column("data",Boolean,JSON),
+#     Column("BEGIN_DATE",DateTime),
+#     Column("END_DATE",DateTime)
+# )
