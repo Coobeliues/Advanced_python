@@ -4,7 +4,7 @@ from datetime import datetime
 import modules.model as _model
 from dbase.db import DB
 from fastapi import APIRouter, HTTPException, status
-from modules.services import create_access_token, get_current_user
+from modules.services import create_access_token
 from passlib.context import CryptContext
 
 router = APIRouter()
@@ -48,7 +48,3 @@ async def login_for_access_token(user1: _model.UserCreate):
     
     return {"access_token": create_access_token(data={"username": user1.username}), "token_type": "bearer", "greting" : user["username"]}
 
-
-# @router.post("/logout/")
-# async def logout(current_user: _model.User = Depends(get_current_user)):
-#     return {"message": "Logged out successfully", "user": current_user}

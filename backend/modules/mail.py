@@ -4,10 +4,9 @@ import smtplib
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from modules.services import PDF_PATH
 
+PDF_PATH = '/appp/output.pdf'
 def send_email(email: str):
-    print(email)
     sender = "e.naryshov@gmail.com"
     password = 'walk kafq scgw dkiv'
     receiver = email 
@@ -15,7 +14,6 @@ def send_email(email: str):
     message =  "Here is your PDF file"
     server = smtplib.SMTP("smtp.gmail.com", 587)
     server.starttls()
-
     
     try:
         server.login(sender, password)

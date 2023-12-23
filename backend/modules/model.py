@@ -44,13 +44,13 @@ telegram_users = Table(
     UniqueConstraint("chat_id")
 )
 
-pdf_info = Table(
-    "pdf_info",
-    metadata,
-    Column("id", Integer, primary_key=True),
-    Column("chat_id", String),
-    Column("pdf", LargeBinary),
-)
+# pdf_info = Table(
+#     "pdf_info",
+#     metadata,
+#     Column("id", Integer, primary_key=True),
+#     Column("chat_id", String),
+#     Column("pdf", LargeBinary),
+# )
 
 users = Table(
     "users",
@@ -115,10 +115,8 @@ class UserRead(BaseModel):
     birthdate: str
     telegram_account: str
     email: str
-    # role_id: int
 
 class RequestRead(BaseModel):
-    # id: int
     user_id: int
     datas_from_users: dict
     is_done: bool

@@ -1,9 +1,11 @@
 import asyncio
-import requests
+
 import dbase as _dbase
 import modules.model as _model
 import modules.services as _services
+import requests
 from aiogram import Bot, Dispatcher, types
+
 
 async def connect_to_db():
     await _dbase.DB.connect()
