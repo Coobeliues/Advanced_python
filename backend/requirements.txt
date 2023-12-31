@@ -19,3 +19,5 @@ kafka
 fpdf
 SQLAlchemy<2.0
 aiogram==2.9.2
+pytest
+flake8

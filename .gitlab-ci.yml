@@ -1,0 +1,36 @@
+stages:
+  - build
+  - test
+
+job_build:
+  stage: build
+  script:
+    - echo "Building the project"
+
+job_test:
+  stage: test
+  script:
+    - echo "Running tests"
+
+
+# stages:
+#   - build
+#   - test
+
+# variables:
+#   IMAGE_NAME: "your-docker-hub-username/your-image-name"
+
+# before_script:
+#   - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
+# build:
+#   stage: build
+#   script:
+#     - docker build -t $IMAGE_NAME ./path/to/your/Dockerfile -f ./path/to/your/Dockerfile
+#     - docker push $IMAGE_NAME
+
+# lint:
+#   stage: test
+#   script:
+#     - docker-compose -f docker-compose.yml run backend /bin/sh -c "pip install -r requirements.txt && flake8 && pytest"
+

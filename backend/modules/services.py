@@ -44,32 +44,97 @@ async def get_data(bin_value):
         query = _model.request2.insert().values(bin=bin_value,data = detailed_data,BEGIN_DATE = datetime.now(), END_DATE = datetime.now() + timedelta(days=1))
         await DB.execute(query)
     return detailed_data
+# def check_company_by_bin(bin: str, lang: str):
+#     url = f"https://old.stat.gov.kz/api/juridical/counter/api/?bin={bin}&lang={lang}"
+#     try:
+#         response = requests.get(url)
+#         if response.status_code == 200:
+#             data = response.json()
+#             company_exists = data.get("success", False)
+#             name = data.get("obj", {}).get("name", "")  
+#             return {"exists": company_exists, "Name": name}
+#         return {"exists": False, "Name": ""}
+#     except Exception as e:
+#         print(e)
+#         return {"exists": False, "Name": ""}
 def check_company_by_bin(bin: str, lang: str):
-    url = f"https://old.stat.gov.kz/api/juridical/counter/api/?bin={bin}&lang={lang}"
+    # First API
+    url1 = f"https://old.stat.gov.kz/api/juridical/counter/api/?bin={bin}&lang={lang}"
+
     try:
-        response = requests.get(url)
-        if response.status_code == 200:
-            data = response.json()
-            company_exists = data.get("success", False)
-            name = data.get("obj", {}).get("name", "")  
-            return {"exists": company_exists, "Name": name}
+        response1 = requests.get(url1)
+        if response1.status_code == 200:
+            data1 = response1.json()
+            company_exists1 = data1.get("success", False)
+            name1 = data1.get("obj", {}).get("name", "")
+            if company_exists1:
+                return {"exists": company_exists1, "Name": name1}
+        
+        # If the company doesn't exist in the first API, try the second API
+        url2 = "https://gr5.gosreestr.kz/p/ru/api/v1/gr-objects"
+        response2 = requests.get(url2)
+        
+        if response2.status_code == 200:
+            data2 = response2.json()
+            objects = data2.get("Objects", [])
+            for obj in objects:
+                if obj.get("flBin") == bin:
+                    return {"exists": True, "Name": obj.get("flNameRu", "")}
+        
+        # If not found in the second API either, return not exists
         return {"exists": False, "Name": ""}
     except Exception as e:
         print(e)
         return {"exists": False, "Name": ""}
+
+
+
 def get_datas(bin_iin, lang='en'):
-    api_url = f'https://old.stat.gov.kz/api/juridical/counter/api/?bin={bin_iin}&lang={lang}'
-    print(api_url)
+    # First API
+    api_url1 = f'https://old.stat.gov.kz/api/juridical/counter/api/?bin={bin_iin}&lang={lang}'
+    print(api_url1)
+    
     try:
-        response = requests.get(api_url)
-        if response.status_code == 429:
+        response1 = requests.get(api_url1)
+        if response1.status_code == 429:
             time.sleep(20)
-            response = requests.get(api_url)
-        response.raise_for_status()
-        return response.json().get("obj", {})
+            response1 = requests.get(api_url1)
+        response1.raise_for_status()
+        data1 = response1.json().get("obj", {})
+        
+        # If the first API does not return the desired data, try the second API
+        if not data1:
+            api_url2 = 'https://gr5.gosreestr.kz/p/ru/api/v1/gr-objects'
+            print(api_url2)
+            
+            response2 = requests.get(api_url2)
+            if response2.status_code == 200:
+                data2 = response2.json().get("Objects", [])
+                
+                # Find the relevant object based on the bin_iin value
+                for obj in data2:
+                    if obj.get("flBin") == bin_iin:
+                        return obj
+                        
+        return data1
     except requests.exceptions.RequestException as e:
         print(f"Error during API request: {e}")
-        return {}   
+        return {}
+
+
+# def get_datas(bin_iin, lang='en'):
+#     api_url = f'https://old.stat.gov.kz/api/juridical/counter/api/?bin={bin_iin}&lang={lang}'
+#     print(api_url)
+#     try:
+#         response = requests.get(api_url)
+#         if response.status_code == 429:
+#             time.sleep(20)
+#             response = requests.get(api_url)
+#         response.raise_for_status()
+#         return response.json().get("obj", {})
+#     except requests.exceptions.RequestException as e:
+#         print(f"Error during API request: {e}")
+#         return {}   
     
 def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode = data.copy()
@@ -143,33 +208,91 @@ def initialize_pdf():
     pdf.set_font("DejaVuSans", size=12)
     return pdf
 
+# # Add data to PDF
+# def add_data_to_pdf(pdf, data):
+#     fields = [
+#         ("BIN/IIN", "bin"),
+#         ("Name", "name"),
+#         ("Registration Date", "registerDate"),
+#         ("Main code of the GCoEA", "okedCode"),
+#         ("Type of Economic Activity", "okedName"),
+#         ("Secondary code of the GCoEA", "secondOkeds"),
+#         ("Code of CoDE", "krpCode"),
+#         ("Name of CoDE", "krpName"),
+#         ("Code of CoDE (excluding branches)", "krpBfCode"),
+#         ("Name of CoDE", "krpBfName"),
+#         ("CoATO", "kseCode"),
+#         ("Name of the economic sector", "kseName"),
+#         ("KFP code", "kfsCode"),
+#         ("KFP name", "kfsName"),
+#         ("CoATO", "katoCode"),
+#         ("CoATO Id", "katoId"),
+#         ("Legal address", "katoAddress"),
+#         ("Surname, name, patronymic of the head", "fio")
+#     ]
+#     for label, key in fields:
+#         value = data.get(key, "N/A")
+#         text = f"{label}: {value}"
+#         pdf.multi_cell(0, 10, txt=text)
+        
+
 # Add data to PDF
 def add_data_to_pdf(pdf, data):
-    fields = [
-        ("BIN/IIN", "bin"),
-        ("Name", "name"),
-        ("Registration Date", "registerDate"),
-        ("Main code of the GCoEA", "okedCode"),
-        ("Type of Economic Activity", "okedName"),
-        ("Secondary code of the GCoEA", "secondOkeds"),
-        ("Code of CoDE", "krpCode"),
-        ("Name of CoDE", "krpName"),
-        ("Code of CoDE (excluding branches)", "krpBfCode"),
-        ("Name of CoDE", "krpBfName"),
-        ("CoATO", "kseCode"),
-        ("Name of the economic sector", "kseName"),
-        ("KFP code", "kfsCode"),
-        ("KFP name", "kfsName"),
-        ("CoATO", "katoCode"),
-        ("CoATO Id", "katoId"),
-        ("Legal address", "katoAddress"),
-        ("Surname, name, patronymic of the head", "fio")
-    ]
-    for label, key in fields:
-        value = data.get(key, "N/A")
-        text = f"{label}: {value}"
-        pdf.multi_cell(0, 10, txt=text)
-        
+    if "success" in data and "obj" in data:
+        # Use the first API response format
+        fields = [
+            ("BIN/IIN", "bin"),
+            ("Name", "name"),
+            ("Registration Date", "registerDate"),
+            ("Main code of the GCoEA", "okedCode"),
+            ("Type of Economic Activity", "okedName"),
+            ("Secondary code of the GCoEA", "secondOkeds"),
+            ("Code of CoDE", "krpCode"),
+            ("Name of CoDE", "krpName"),
+            ("Code of CoDE (excluding branches)", "krpBfCode"),
+            ("Name of CoDE", "krpBfName"),
+            ("CoATO", "kseCode"),
+            ("Name of the economic sector", "kseName"),
+            ("KFP code", "kfsCode"),
+            ("KFP name", "kfsName"),
+            ("CoATO", "katoCode"),
+            ("CoATO Id", "katoId"),
+            ("Legal address", "katoAddress"),
+            ("Surname, name, patronymic of the head", "fio")
+        ]
+        for label, key in fields:
+            value = data["obj"].get(key, "N/A")
+            text = f"{label}: {value}"
+            pdf.multi_cell(0, 10, txt=text)
+    elif "Objects" in data:
+        # Use the second API response format
+        for obj in data["Objects"]:
+            fields = [
+                ("BIN/IIN", "flBin"),
+                ("Name", "flNameRu"),
+                ("flOpf", "flOpf"),
+                ("flOkedL0", "flOkedL0"),
+                ("flStateInvolvement", "flStateInvolvement"),
+                ("flStatus", "flStatus"),
+                ("flKfsL0", "flKfsL0"),
+                ("flKfsL1", "flKfsL1"),
+                ("Main code of the GCoEA", "flKfsL2"),  # Adjust as needed
+                ("flOwnerBin", "flOwnerBin"),
+                ("flOguBin", "flOguBin"),
+                # Add other fields as needed
+            ]
+            for label, key in fields:
+                value = obj.get(key, "N/A")
+                text = f"{label}: {value}"
+                pdf.multi_cell(0, 10, txt=text)
+    else:
+        print("Unknown data format")
+
+# Example usage:
+# add_data_to_pdf(pdf, response_data)
+
+
+
 # Save PDF to specified path
 def save_pdf(pdf):
     pdf.output(PDF_PATH)
